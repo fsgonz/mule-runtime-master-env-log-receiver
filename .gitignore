@@ -1,0 +1,16 @@
+*.iml
+.idea/**
+target/
+
+**/.DS_Store
+build/**
+
+.env
+
+# Helm
+**/requirements.lock
+**/charts
+**/Chart.lock
+
+/sonar/**
+coverage.out

@@ -1,0 +1,4 @@
+node {
+   runtimeBuild()
+   cleanWs()
+}
