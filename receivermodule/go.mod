@@ -1,4 +1,4 @@
-module github.com/fsgonz/mule-runtime-master-env-log-receiver
+module github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule
 
 go 1.21.0
 
