@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/internal/stats/scraper"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/stats/scraper"
 	"io"
 	"io/ioutil"
 	"os"

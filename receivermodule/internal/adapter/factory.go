@@ -5,9 +5,9 @@ package adapter
 
 import (
 	"context"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/internal/consumerretry"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/internal/file"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/internal/logsampler"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/file"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/logsampler"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/pipeline"

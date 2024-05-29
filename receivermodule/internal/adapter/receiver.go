@@ -6,7 +6,7 @@ package adapter
 import (
 	"context"
 	"fmt"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/internal/file"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/file"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"sync"
 	"time"
