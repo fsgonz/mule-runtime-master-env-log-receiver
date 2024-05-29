@@ -1,8 +1,6 @@
 module github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule
 
-go 1.21.0
-
-toolchain go1.22.2
+go 1.22.2
 
 require (
 	github.com/cenkalti/backoff/v4 v4.3.0
@@ -16,8 +14,8 @@ require (
 	go.opentelemetry.io/collector/extension v0.101.0
 	go.opentelemetry.io/collector/pdata v1.8.0
 	go.opentelemetry.io/collector/receiver v0.101.0
-	go.opentelemetry.io/otel v1.26.0
-	go.opentelemetry.io/otel/trace v1.26.0
+	go.opentelemetry.io/otel v1.27.0
+	go.opentelemetry.io/otel/trace v1.27.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
 )
@@ -46,7 +44,7 @@ require (
 	go.opentelemetry.io/collector v0.101.0 // indirect
 	go.opentelemetry.io/collector/confmap v0.101.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.8.0 // indirect
-	go.opentelemetry.io/otel/metric v1.26.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
