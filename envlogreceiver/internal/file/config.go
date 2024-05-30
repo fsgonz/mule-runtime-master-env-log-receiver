@@ -1,7 +1,6 @@
 package file
 
 import (
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"
@@ -33,7 +32,6 @@ func NewFileInputConfig() *InputConfig {
 func NewFileInputConfigWithID(operatorID string) *InputConfig {
 	return &InputConfig{
 		InputConfig: helper.NewInputConfig(operatorID, operatorType),
-		Config:      *fileconsumer.NewConfig(),
 	}
 }
 
@@ -59,7 +57,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 	c.input = *input
 
 	// Build the file consumer with the specified configuration and emit function
-	input.consumer, err = c.Config.Build(set, input.emit)
+	input.consumer, err = c.ConsumerConfig.Build(set, input.emit)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +79,7 @@ type InputConfig struct {
 	helper.InputConfig `mapstructure:",squash"`
 
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
-	fileconsumer.Config `mapstructure:",squash"`
+	ConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
 	input Input
