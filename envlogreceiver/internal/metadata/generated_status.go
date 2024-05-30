@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Type = component.MustNewType("mule-runtime-master-env-log-receiver ")
+	Type = component.MustNewType("envlogreceiver")
 )
 
 const (

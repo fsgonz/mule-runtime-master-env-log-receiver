@@ -1,17 +1,17 @@
-package receivermodule
+package envlogreceiver
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/consumerretry"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/file"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/logsampler"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/metadata"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/metadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/receiver"
 )
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/receivermodule/internal/adapter"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/adapter"
 )
 
 // NewFactory creates a factory for receiver
