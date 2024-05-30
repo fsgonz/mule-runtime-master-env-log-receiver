@@ -13,7 +13,7 @@ import (
 )
 
 type ConsumerConfig struct {
-	Path               string `mapstructure:"include,omitempty"`
+	Path               string `mapstructure:"path,omitempty"`
 	attrs.Resolver     `mapstructure:",squash"`
 	PollInterval       time.Duration              `mapstructure:"poll_interval,omitempty"`
 	MaxConcurrentFiles int                        `mapstructure:"max_concurrent_files,omitempty"`
