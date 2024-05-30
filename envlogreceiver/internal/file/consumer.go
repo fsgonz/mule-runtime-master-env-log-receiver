@@ -12,6 +12,30 @@ import (
 	"time"
 )
 
+const (
+	defaultMaxConcurrentFiles = 1024
+	defaultEncoding           = "utf-8"
+	defaultPollInterval       = 200 * time.Millisecond
+	defaultFingerprintSize    = 1000
+	DefaultMaxLogSize         = 1024 * 1024
+	DefaultFlushPeriod        = 500 * time.Millisecond
+)
+
+func NewConsumerConfig() *ConsumerConfig {
+	return &ConsumerConfig{
+		PollInterval:       defaultPollInterval,
+		MaxConcurrentFiles: defaultMaxConcurrentFiles,
+		StartAt:            "end",
+		FingerprintSize:    defaultFingerprintSize,
+		MaxLogSize:         DefaultMaxLogSize,
+		Encoding:           defaultEncoding,
+		FlushPeriod:        DefaultFlushPeriod,
+		Resolver: attrs.Resolver{
+			IncludeFileName: true,
+		},
+	}
+}
+
 type ConsumerConfig struct {
 	Path               string `mapstructure:"path,omitempty"`
 	attrs.Resolver     `mapstructure:",squash"`

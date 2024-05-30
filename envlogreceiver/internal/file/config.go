@@ -31,7 +31,8 @@ func NewFileInputConfig() *InputConfig {
 //   - *InputConfig: A pointer to the newly created InputConfig with default values.
 func NewFileInputConfigWithID(operatorID string) *InputConfig {
 	return &InputConfig{
-		InputConfig: helper.NewInputConfig(operatorID, operatorType),
+		InputConfig:    helper.NewInputConfig(operatorID, operatorType),
+		ConsumerConfig: *NewConsumerConfig(),
 	}
 }
 
