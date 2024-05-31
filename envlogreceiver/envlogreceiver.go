@@ -69,8 +69,8 @@ func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
 	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).InputConfig)
 }
 
-func (f ReceiverType) ConsumerConfig(cfg component.Config) operator.Config {
-	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).InputConfig)
+func (f ReceiverType) ConsumerConfig(cfg component.Config) file.ConsumerConfig {
+	return *&cfg.(*OtelNetStatsReceiverConfig).InputConfig.ConsumerConfig
 }
 
 func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
