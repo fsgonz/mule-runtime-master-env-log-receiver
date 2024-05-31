@@ -55,7 +55,7 @@ func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
 // OtelNetStatsReceiverConfig represents the configuration for the OpenTelemetry NetStats Logs Receiver.
 type OtelNetStatsReceiverConfig struct {
 	// InputConfig embeds the configuration for the network statistics input.
-	InputConfig file.InputConfig `mapstructure:"file_buffer"`
+	InputConfig file.InputConfig `mapstructure:"buffer"`
 
 	// BaseConfig embeds the base configuration for the logs receiver.
 	adapter.BaseConfig `mapstructure:",squash"`
