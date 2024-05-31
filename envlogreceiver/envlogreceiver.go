@@ -6,6 +6,7 @@ import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/metadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/receiver"
 )
@@ -72,6 +73,6 @@ func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 	return cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig
 }
 
-func (f ReceiverType) Input(cfg component.Config) file.Input {
+func (f ReceiverType) Input(cfg component.Config) helper.WriterOperator {
 	return cfg.(*OtelNetStatsReceiverConfig).InputConfig.Input()
 }

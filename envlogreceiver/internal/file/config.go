@@ -55,7 +55,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		InputOperator: inputOperator,
 	}
 
-	c.input = *input
+	c.input = input.InputOperator.WriterOperator
 
 	// Build the file consumer with the specified configuration and emit function
 	input.consumer, err = c.ConsumerConfig.Build(set, input.emit)
@@ -70,7 +70,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 //
 // Returns:
 //   - Input: The input operator that was constructed from the InputConfig.
-func (c InputConfig) Input() Input {
+func (c InputConfig) Input() helper.WriterOperator {
 	return c.input
 }
 
@@ -83,5 +83,5 @@ type InputConfig struct {
 	ConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
-	input Input
+	input helper.WriterOperator
 }
