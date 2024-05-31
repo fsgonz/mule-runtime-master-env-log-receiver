@@ -51,14 +51,19 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		return nil, err
 	}
 
+	// Build the file consumer with the specified configuration and emit function
+
 	input := &Input{
 		InputOperator: inputOperator,
 	}
 
-	c.input = input.InputOperator.WriterOperator
+	if c.ConsumerConfig.Path != "" {
+		c.input = input.InputOperator.WriterOperator
+		input.consumer, err = c.ConsumerConfig.Build(set, input.emit)
+	} else {
+		input = nil
+	}
 
-	// Build the file consumer with the specified configuration and emit function
-	input.consumer, err = c.ConsumerConfig.Build(set, input.emit)
 	if err != nil {
 		return nil, err
 	}

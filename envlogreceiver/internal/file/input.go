@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/entry"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.uber.org/zap"
@@ -12,7 +11,12 @@ import (
 
 type Input struct {
 	helper.InputOperator
-	consumer *fileconsumer.Manager
+	consumer StartStoppable
+}
+
+type StartStoppable interface {
+	Start(persister operator.Persister) error
+	Stop() error
 }
 
 func (i *Input) Start(persister operator.Persister) error {
