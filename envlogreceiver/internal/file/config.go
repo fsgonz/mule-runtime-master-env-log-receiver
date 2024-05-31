@@ -31,8 +31,8 @@ func NewFileInputConfig() *InputConfig {
 //   - *InputConfig: A pointer to the newly created InputConfig with default values.
 func NewFileInputConfigWithID(operatorID string) *InputConfig {
 	return &InputConfig{
-		InputConfig:    helper.NewInputConfig(operatorID, operatorType),
-		ConsumerConfig: *NewConsumerConfig(),
+		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
+		FileConsumerConfig: *NewConsumerConfig(),
 	}
 }
 
@@ -57,9 +57,9 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		InputOperator: inputOperator,
 	}
 
-	if c.ConsumerConfig.Path != "" {
+	if c.FileConsumerConfig.Path != "" {
 		c.input = input.InputOperator.WriterOperator
-		input.consumer, err = c.ConsumerConfig.Build(set, input.emit)
+		input.consumer, err = c.FileConsumerConfig.Build(set, input.emit)
 	} else {
 		input = nil
 	}
@@ -85,7 +85,7 @@ type InputConfig struct {
 	helper.InputConfig `mapstructure:",squash"`
 
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
-	ConsumerConfig `mapstructure:",squash"`
+	FileConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
 	input helper.WriterOperator

@@ -21,8 +21,8 @@ const (
 	DefaultFlushPeriod        = 500 * time.Millisecond
 )
 
-func NewConsumerConfig() *ConsumerConfig {
-	return &ConsumerConfig{
+func NewConsumerConfig() *FileConsumerConfig {
+	return &FileConsumerConfig{
 		PollInterval:       defaultPollInterval,
 		MaxConcurrentFiles: defaultMaxConcurrentFiles,
 		StartAt:            "end",
@@ -36,7 +36,7 @@ func NewConsumerConfig() *ConsumerConfig {
 	}
 }
 
-type ConsumerConfig struct {
+type FileConsumerConfig struct {
 	Path               string `mapstructure:"path,omitempty"`
 	attrs.Resolver     `mapstructure:",squash"`
 	PollInterval       time.Duration              `mapstructure:"poll_interval,omitempty"`
@@ -53,7 +53,7 @@ type ConsumerConfig struct {
 	DeleteAfterRead    bool                       `mapstructure:"delete_after_read,omitempty"`
 }
 
-func (c ConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
+func (c FileConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
 	criteria := matcher.Criteria{Include: []string{c.Path}}
 
 	config := fileconsumer.Config{

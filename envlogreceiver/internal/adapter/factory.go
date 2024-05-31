@@ -25,7 +25,7 @@ type LogReceiverType interface {
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
 	LogSamplers(component.Config) logsampler.Config
-	ConsumerConfig(component.Config) file.ConsumerConfig
+	ConsumerConfig(component.Config) file.FileConsumerConfig
 	Input(cfg component.Config) helper.WriterOperator
 }
 
