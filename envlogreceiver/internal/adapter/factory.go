@@ -25,7 +25,7 @@ type LogReceiverType interface {
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
 	LogSamplers(component.Config) logsampler.Config
-	ConsumerConfig() file.ConsumerConfig
+	ConsumerConfig(component.Config) file.ConsumerConfig
 	Input(cfg component.Config) helper.WriterOperator
 }
 
@@ -62,7 +62,7 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		}
 
 		sampler := ""
-		samplerUri := logReceiverType.ConsumerConfig().Path
+		samplerUri := logReceiverType.ConsumerConfig(cfg).Path
 		samplerPollInterval := time.Minute
 
 		if len(logSamplerCfg.LogSamplers) != 0 {
