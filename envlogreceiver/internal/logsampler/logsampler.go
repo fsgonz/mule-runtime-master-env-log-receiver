@@ -37,12 +37,6 @@ func (cfg *Config) Validate() error {
 		if logSampler.Metric != MetricNetstats {
 			return &LogSamplerError{"Incorrect metric in sampler. Possible Values: [" + MetricNetstats + "]"}
 		}
-		switch logSampler.Output {
-		case OutputFileLogger, OutputPipelineEmitter:
-			break
-		default:
-			return &LogSamplerError{"Incorrect output in sampler. Possible Values: [" + OutputFileLogger + ", " + OutputPipelineEmitter + "]"}
-		}
 	}
 	return nil
 }
