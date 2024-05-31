@@ -1,6 +1,7 @@
 package file
 
 import (
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/storage"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"
@@ -87,7 +88,7 @@ type InputConfig struct {
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
 	FileConsumerConfig `mapstructure:",squash"`
 
-	StorageConsumerConfig `mapstructure:",squash"`
+	storage.StorageConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
 	input helper.WriterOperator
