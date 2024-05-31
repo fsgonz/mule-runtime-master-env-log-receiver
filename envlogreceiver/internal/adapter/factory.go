@@ -6,7 +6,6 @@ package adapter
 import (
 	"context"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
@@ -25,7 +24,7 @@ type LogReceiverType interface {
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
 	LogSamplers(component.Config) logsampler.Config
-	Input(cfg component.Config) file.Input
+	Input(cfg component.Config) helper.WriterOperator
 }
 
 // NewFactory creates a factory for a Stanza-based receiver
@@ -68,8 +67,6 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		if len(logSamplerCfg.LogSamplers) != 0 {
 			sampler = logSamplerCfg.LogSamplers[0].Metric
 			samplerPollInterval = logSamplerCfg.LogSamplers[0].PollInterval
-			samplerUri = logSamplerCfg.LogSamplers[0].URI
-			samplerOutput = logSamplerCfg.LogSamplers[0].Output
 		}
 
 		emitter := helper.NewLogEmitter(params.TelemetrySettings, emitterOpts...)
