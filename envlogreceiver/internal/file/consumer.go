@@ -21,21 +21,6 @@ const (
 	DefaultFlushPeriod        = 500 * time.Millisecond
 )
 
-func NewConsumerConfig() *FileConsumerConfig {
-	return &FileConsumerConfig{
-		PollInterval:       defaultPollInterval,
-		MaxConcurrentFiles: defaultMaxConcurrentFiles,
-		StartAt:            "end",
-		FingerprintSize:    defaultFingerprintSize,
-		MaxLogSize:         DefaultMaxLogSize,
-		Encoding:           defaultEncoding,
-		FlushPeriod:        DefaultFlushPeriod,
-		Resolver: attrs.Resolver{
-			IncludeFileName: true,
-		},
-	}
-}
-
 type FileConsumerConfig struct {
 	Path               string `mapstructure:"path,omitempty"`
 	attrs.Resolver     `mapstructure:",squash"`
@@ -51,6 +36,21 @@ type FileConsumerConfig struct {
 	FlushPeriod        time.Duration              `mapstructure:"force_flush_period,omitempty"`
 	Header             *fileconsumer.HeaderConfig `mapstructure:"header,omitempty"`
 	DeleteAfterRead    bool                       `mapstructure:"delete_after_read,omitempty"`
+}
+
+func NewConsumerConfig() *FileConsumerConfig {
+	return &FileConsumerConfig{
+		PollInterval:       defaultPollInterval,
+		MaxConcurrentFiles: defaultMaxConcurrentFiles,
+		StartAt:            "end",
+		FingerprintSize:    defaultFingerprintSize,
+		MaxLogSize:         DefaultMaxLogSize,
+		Encoding:           defaultEncoding,
+		FlushPeriod:        DefaultFlushPeriod,
+		Resolver: attrs.Resolver{
+			IncludeFileName: true,
+		},
+	}
 }
 
 func (c FileConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {

@@ -88,6 +88,7 @@ type InputConfig struct {
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
 	FileConsumerConfig `mapstructure:",squash"`
 
+	// Config embeds the storage consuemr
 	storage.StorageConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
