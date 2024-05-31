@@ -66,6 +66,7 @@ type OtelNetStatsReceiverConfig struct {
 
 // InputConfig unmarshals the input operator
 func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
+	cfg.(*OtelNetStatsReceiverConfig).InputConfig.StorageConsumerConfig.PollInterval = cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig.LogSamplers[0].PollInterval
 	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).InputConfig)
 }
 
