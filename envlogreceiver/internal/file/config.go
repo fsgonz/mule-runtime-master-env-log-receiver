@@ -62,7 +62,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		c.input = input.InputOperator.WriterOperator
 		input.consumer, err = c.FileConsumerConfig.Build(set, input.emit)
 	} else {
-		input.consumer, err = c.StorageConsumerConfig.Build(input.emit)
+		input.consumer, err = c.StorageConsumerConfig.Build(set, input.emit)
 	}
 
 	if err != nil {
