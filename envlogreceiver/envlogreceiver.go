@@ -15,6 +15,10 @@ import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/adapter"
 )
 
+const (
+	operatorType = "file_input"
+)
+
 // NewFactory creates a factory for receiver
 func NewFactory() receiver.Factory {
 	return adapter.NewFactory(ReceiverType{}, metadata.LogsStability)
@@ -40,6 +44,7 @@ func createDefaultConfig() *OtelNetStatsReceiverConfig {
 			Operators:      []operator.Config{},
 			RetryOnFailure: consumerretry.NewDefaultConfig(),
 		},
+		InputConfig:  helper.NewInputConfig(operatorType, operatorType),
 		BufferConfig: *file.NewFileInputConfig(),
 		LogSamplerConfig: logsampler.Config{
 			LogSamplers: []logsampler.LogSampler{},
