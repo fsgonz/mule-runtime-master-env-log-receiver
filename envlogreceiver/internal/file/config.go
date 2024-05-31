@@ -51,7 +51,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		return nil, err
 	}
 
-	// Build the file consumer with the specified configuration and emit function
+	// Build the file storage with the specified configuration and emit function
 
 	input := &Input{
 		InputOperator: inputOperator,
@@ -61,7 +61,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		c.input = input.InputOperator.WriterOperator
 		input.consumer, err = c.FileConsumerConfig.Build(set, input.emit)
 	} else {
-		input = nil
+		input = c.StorageConsumerConfig.Build(input.emit)
 	}
 
 	if err != nil {
@@ -86,6 +86,8 @@ type InputConfig struct {
 
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
 	FileConsumerConfig `mapstructure:",squash"`
+
+	StorageConsumerConfig `mapstructure:",squash"`
 
 	// input holds the constructed Input operator.
 	input helper.WriterOperator
