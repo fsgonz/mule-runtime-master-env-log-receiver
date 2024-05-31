@@ -18,6 +18,7 @@ func (c StorageConsumerConfig) Build(set component.TelemetrySettings, emit func(
 	return &Manager{
 		set:          set,
 		pollInterval: c.PollInterval,
+		emit:         emit,
 	}, nil
 }
 
