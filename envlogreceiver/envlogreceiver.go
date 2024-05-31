@@ -40,7 +40,7 @@ func createDefaultConfig() *OtelNetStatsReceiverConfig {
 			Operators:      []operator.Config{},
 			RetryOnFailure: consumerretry.NewDefaultConfig(),
 		},
-		InputConfig: *file.NewFileInputConfig(),
+		BufferConfig: *file.NewFileInputConfig(),
 		LogSamplerConfig: logsampler.Config{
 			LogSamplers: []logsampler.LogSampler{},
 		},
@@ -54,8 +54,11 @@ func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
 
 // OtelNetStatsReceiverConfig represents the configuration for the OpenTelemetry NetStats Logs Receiver.
 type OtelNetStatsReceiverConfig struct {
+	// InputConfig provides a basic implementation of an input operator config.
+	InputConfig helper.InputConfig `mapstructure:",squash"`
+
 	// InputConfig embeds the configuration for the network statistics input.
-	InputConfig file.InputConfig `mapstructure:"buffer"`
+	BufferConfig file.BeufferConfig `mapstructure:"buffer"`
 
 	// BaseConfig embeds the base configuration for the logs receiver.
 	adapter.BaseConfig `mapstructure:",squash"`
@@ -66,12 +69,13 @@ type OtelNetStatsReceiverConfig struct {
 
 // InputConfig unmarshals the input operator
 func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
-	cfg.(*OtelNetStatsReceiverConfig).InputConfig.StorageConsumerConfig.PollInterval = cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig.LogSamplers[0].PollInterval
-	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).InputConfig)
+	cfg.(*OtelNetStatsReceiverConfig).BufferConfig.StorageConsumerConfig.PollInterval = cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig.LogSamplers[0].PollInterval
+	cfg.(*OtelNetStatsReceiverConfig).BufferConfig.InputConfig = cfg.(*OtelNetStatsReceiverConfig).InputConfig
+	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).BufferConfig)
 }
 
 func (f ReceiverType) ConsumerConfig(cfg component.Config) file.FileConsumerConfig {
-	return *&cfg.(*OtelNetStatsReceiverConfig).InputConfig.FileConsumerConfig
+	return *&cfg.(*OtelNetStatsReceiverConfig).BufferConfig.FileConsumerConfig
 }
 
 func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
@@ -79,5 +83,5 @@ func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 }
 
 func (f ReceiverType) Input(cfg component.Config) helper.WriterOperator {
-	return cfg.(*OtelNetStatsReceiverConfig).InputConfig.Input()
+	return cfg.(*OtelNetStatsReceiverConfig).BufferConfig.Input()
 }

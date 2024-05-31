@@ -15,23 +15,23 @@ func init() {
 	operator.Register(operatorType, func() operator.Builder { return NewFileInputConfig() })
 }
 
-// NewFileInputConfig creates a new InputConfig with default values.
+// NewFileInputConfig creates a new BeufferConfig with default values.
 //
 // Returns:
-//   - *InputConfig: A pointer to the newly created InputConfig with default values.
-func NewFileInputConfig() *InputConfig {
+//   - *BeufferConfig: A pointer to the newly created BeufferConfig with default values.
+func NewFileInputConfig() *BeufferConfig {
 	return NewFileInputConfigWithID(operatorType)
 }
 
-// NewFileInputConfigWithID creates a new InputConfig with default values and a specific operator ID.
+// NewFileInputConfigWithID creates a new BeufferConfig with default values and a specific operator ID.
 //
 // Parameters:
 //   - operatorID (string): The ID to be used for the operator.
 //
 // Returns:
-//   - *InputConfig: A pointer to the newly created InputConfig with default values.
-func NewFileInputConfigWithID(operatorID string) *InputConfig {
-	return &InputConfig{
+//   - *BeufferConfig: A pointer to the newly created BeufferConfig with default values.
+func NewFileInputConfigWithID(operatorID string) *BeufferConfig {
+	return &BeufferConfig{
 		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
 		FileConsumerConfig: *NewConsumerConfig(),
 	}
@@ -45,7 +45,7 @@ func NewFileInputConfigWithID(operatorID string) *InputConfig {
 // Returns:
 //   - operator.Operator: The constructed file input operator.
 //   - error: An error that occurred during the build process, or nil if the build was successful.
-func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
+func (c BeufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
 	// Build the input operator from the configuration
 	inputOperator, err := c.InputConfig.Build(set)
 	if err != nil {
@@ -72,16 +72,16 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 	return input, nil
 }
 
-// Input returns the constructed Input operator from the InputConfig.
+// Input returns the constructed Input operator from the BeufferConfig.
 //
 // Returns:
-//   - Input: The input operator that was constructed from the InputConfig.
-func (c InputConfig) Input() helper.WriterOperator {
+//   - Input: The input operator that was constructed from the BeufferConfig.
+func (c BeufferConfig) Input() helper.WriterOperator {
 	return c.input
 }
 
-// InputConfig defines the configuration for the file input operator.
-type InputConfig struct {
+// BeufferConfig defines the configuration for the file input operator.
+type BeufferConfig struct {
 	// InputConfig embeds the helper.InputConfig struct, which provides basic input operator configuration.
 	helper.InputConfig `mapstructure:",squash"`
 
