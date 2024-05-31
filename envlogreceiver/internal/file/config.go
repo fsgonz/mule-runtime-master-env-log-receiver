@@ -62,6 +62,7 @@ func (c InputConfig) Build(set component.TelemetrySettings) (operator.Operator, 
 		c.input = input.InputOperator.WriterOperator
 		input.consumer, err = c.FileConsumerConfig.Build(set, input.emit)
 	} else {
+		c.StorageConsumerConfig.PollInterval = c.PollInterval
 		input.consumer, err = c.StorageConsumerConfig.Build(set, input.emit)
 	}
 
