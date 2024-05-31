@@ -22,8 +22,6 @@ func (e *LogSamplerError) Error() string {
 // LogSampler represents a log sampling configuration.
 type LogSampler struct {
 	Metric       string        `mapstructure:"metric"`
-	Output       string        `mapstructure:"output"`
-	URI          string        `mapstructure:"uri"`
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 

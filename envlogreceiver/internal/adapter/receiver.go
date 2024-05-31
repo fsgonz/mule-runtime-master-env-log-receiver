@@ -6,7 +6,6 @@ package adapter
 import (
 	"context"
 	"fmt"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"sync"
 	"time"
@@ -41,7 +40,7 @@ type receiver struct {
 
 	storageID     *component.ID
 	storageClient storage.Client
-	input         file.Input
+	input         helper.WriterOperator
 }
 
 // Ensure this receiver adheres to required interface

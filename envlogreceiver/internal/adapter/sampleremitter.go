@@ -3,8 +3,6 @@ package adapter
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/lumberjack"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/sampler"
@@ -58,45 +56,21 @@ func (e FileLoggerSamplerEmitter) Emit(ctx context.Context) {
 
 }
 
-type PipelineConsumerSamplerEmitter struct {
-	Emitter   helper.LogEmitter
-	persister operator.Persister
-	sampler   sampler.Sampler
-	input     file.Input
-}
-
-func (e PipelineConsumerSamplerEmitter) Emit(ctx context.Context) {
-	jsonEntry := logEntry(ctx, e.persister, e.sampler)
-	e.input.Emit(ctx, jsonEntry, map[string]any{})
-}
-
-func SamplerEmitterFactory(output string, uri string, persister operator.Persister, emitter *helper.LogEmitter, input file.Input) (SamplerEmitter, error) {
+func SamplerEmitterFactory(output string, uri string, persister operator.Persister, emitter *helper.LogEmitter, input helper.WriterOperator) (SamplerEmitter, error) {
 	fileBasedSampler := sampler.NewFileBasedSampler("/proc/net/dev", scraper.NewLinuxNetworkDevicesFileScraper())
 
-	switch output {
-	case logsampler.OutputFileLogger:
-		metricsLogger := log.New(&lumberjack.Logger{
-			Filename:   uri,
-			MaxSize:    100, // kilobytes
-			MaxBackups: 20,
-		}, "", 0)
+	metricsLogger := log.New(&lumberjack.Logger{
+		Filename:   uri,
+		MaxSize:    100, // kilobytes
+		MaxBackups: 20,
+	}, "", 0)
 
-		return FileLoggerSamplerEmitter{
-			output,
-			*metricsLogger,
-			persister,
-			fileBasedSampler,
-		}, nil
-	case logsampler.OutputPipelineEmitter:
-		return PipelineConsumerSamplerEmitter{
-			*emitter,
-			persister,
-			fileBasedSampler,
-			input,
-		}, nil
-	default:
-		return nil, fmt.Errorf("unknown output type: %s", output)
-	}
+	return FileLoggerSamplerEmitter{
+		output,
+		*metricsLogger,
+		persister,
+		fileBasedSampler,
+	}, nil
 }
 
 func logEntry(ctx context.Context, persister operator.Persister, sampler sampler.Sampler) []byte {
