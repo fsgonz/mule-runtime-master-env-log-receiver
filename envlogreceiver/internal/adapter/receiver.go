@@ -26,7 +26,6 @@ type receiver struct {
 	set                 component.TelemetrySettings
 	samplerPollInterval time.Duration
 	sampler             string
-	samplerOutput       string
 	samplerURI          string
 	id                  component.ID
 	wg                  sync.WaitGroup
@@ -163,7 +162,7 @@ func (r *receiver) Shutdown(ctx context.Context) error {
 }
 
 func (r *receiver) samplerLoop(ctx context.Context, persister operator.Persister) {
-	samplerEmitter, err := SamplerEmitterFactory(r.samplerOutput, r.samplerURI, persister, r.emitter, r.input)
+	samplerEmitter, err := SamplerEmitterFactory(r.samplerURI, persister, r.emitter, r.input)
 
 	if err != nil {
 		r.set.Logger.Debug("Error on sampler loop creation", zap.Error(err))

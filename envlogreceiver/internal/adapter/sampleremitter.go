@@ -44,7 +44,6 @@ type SamplerEmitter interface {
 }
 
 type FileLoggerSamplerEmitter struct {
-	URI           string
 	metricsLogger log.Logger
 	persister     operator.Persister
 	sampler       sampler.Sampler
@@ -56,7 +55,7 @@ func (e FileLoggerSamplerEmitter) Emit(ctx context.Context) {
 
 }
 
-func SamplerEmitterFactory(output string, uri string, persister operator.Persister, emitter *helper.LogEmitter, input helper.WriterOperator) (SamplerEmitter, error) {
+func SamplerEmitterFactory(uri string, persister operator.Persister, emitter *helper.LogEmitter, input helper.WriterOperator) (SamplerEmitter, error) {
 	fileBasedSampler := sampler.NewFileBasedSampler("/proc/net/dev", scraper.NewLinuxNetworkDevicesFileScraper())
 
 	metricsLogger := log.New(&lumberjack.Logger{
@@ -66,7 +65,6 @@ func SamplerEmitterFactory(output string, uri string, persister operator.Persist
 	}, "", 0)
 
 	return FileLoggerSamplerEmitter{
-		output,
 		*metricsLogger,
 		persister,
 		fileBasedSampler,

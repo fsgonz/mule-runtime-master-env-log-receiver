@@ -6,6 +6,7 @@ package adapter
 import (
 	"context"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
@@ -24,6 +25,7 @@ type LogReceiverType interface {
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
 	LogSamplers(component.Config) logsampler.Config
+	ConsumerConfig() file.ConsumerConfig
 	Input(cfg component.Config) helper.WriterOperator
 }
 
@@ -60,8 +62,7 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		}
 
 		sampler := ""
-		samplerUri := ""
-		samplerOutput := ""
+		samplerUri := logReceiverType.ConsumerConfig().Path
 		samplerPollInterval := time.Minute
 
 		if len(logSamplerCfg.LogSamplers) != 0 {
@@ -102,7 +103,6 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 			storageID:           baseCfg.StorageID,
 			sampler:             sampler,
 			samplerPollInterval: samplerPollInterval,
-			samplerOutput:       samplerOutput,
 			samplerURI:          samplerUri,
 			input:               input,
 		}, nil
