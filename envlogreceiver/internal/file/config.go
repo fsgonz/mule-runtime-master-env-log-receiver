@@ -34,7 +34,7 @@ func NewFileInputConfig() *BufferConfig {
 func NewFileInputConfigWithID(operatorID string) *BufferConfig {
 	return &BufferConfig{
 		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
-		FileConsumerConfig: *NewConsumerConfig(),
+		FileConsumerConfig: *statsconsumer.NewConsumerConfig(),
 	}
 }
 
@@ -75,7 +75,7 @@ type BufferConfig struct {
 	helper.InputConfig `mapstructure:",squash"`
 
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
-	FileConsumerConfig `mapstructure:",squash"`
+	statsconsumer.FileConsumerConfig `mapstructure:",squash"`
 
 	// Config embeds the statsconsumer consuemr
 	statsconsumer.StatsConsumerConfig `mapstructure:",squash"`

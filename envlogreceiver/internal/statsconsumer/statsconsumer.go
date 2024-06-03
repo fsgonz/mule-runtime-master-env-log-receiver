@@ -46,7 +46,7 @@ type StatsConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
-func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig file.FileConsumerConfig) (file.StartStoppable, error) {
+func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (file.StartStoppable, error) {
 	if fileConsumerConfig.Path != "" {
 		criteria := matcher.Criteria{Include: []string{fileConsumerConfig.Path}}
 
