@@ -1,11 +1,6 @@
 # Environment Log Receiver
 
-| Status        |           |
-| ------------- |-----------|
-| Stability     | [beta]   |
-
-
-An extension that produces logs containing stats for the environment. A file can be used as an additional buffer.
+An receiver that produces logs containing stats for the environment. A file can be used as an additional buffer.
 
 ## Configuration
 
