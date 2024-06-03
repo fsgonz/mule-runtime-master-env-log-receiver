@@ -67,12 +67,12 @@ func (f *ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 }
 
 // BaseConfig gets the base config from config, for now
-func (f *ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
+func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
 	return cfg.(*OtelNetStatsReceiverConfig).BaseConfig
 }
 
 // Type is the receiver type
-func (f *ReceiverType) Type() component.Type {
+func (f ReceiverType) Type() component.Type {
 	return metadata.Type
 }
 
