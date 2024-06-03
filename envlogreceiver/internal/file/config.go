@@ -3,6 +3,7 @@ package file
 import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"
 )
 
@@ -31,6 +32,7 @@ func NewFileInputConfig() *BufferConfig {
 //   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
 func NewFileInputConfigWithID(operatorID string) *BufferConfig {
 	return &BufferConfig{
+		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
 		FileConsumerConfig: *NewConsumerConfig(),
 	}
 }
@@ -56,6 +58,9 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 
 // BufferConfig defines the configuration for the file input operator.
 type BufferConfig struct {
+	// InputConfig embeds the helper.InputConfig struct, which provides basic input operator configuration.
+	helper.InputConfig `mapstructure:",squash"`
+
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
 	FileConsumerConfig `mapstructure:",squash"`
 
