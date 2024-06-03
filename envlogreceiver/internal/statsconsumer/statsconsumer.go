@@ -44,10 +44,10 @@ type StorageConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
-func Build(set component.TelemetrySettings, logSamplerConfig logsampler.Config, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error) (*Manager, error) {
+func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error) (*Manager, error) {
 	return &Manager{
 		set:          set,
-		pollInterval: logSamplerConfig.LogSamplers[0].PollInterval,
+		pollInterval: logSampler.PollInterval,
 		emit:         emit,
 	}, nil
 }

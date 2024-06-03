@@ -60,7 +60,7 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 		InputOperator: inputOperator,
 	}
 
-	input.consumer, err = statsconsumer.Build(set, c.logSamplerConfig, input.emit)
+	input.consumer, err = statsconsumer.Build(set, c.logSampler, input.emit)
 
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ type BufferConfig struct {
 
 	id string
 
-	logSamplerConfig logsampler.Config
+	logSampler logsampler.LogSampler
 }
 
 func (c BufferConfig) ID() string {
@@ -98,5 +98,5 @@ func (c BufferConfig) SetID(ID string) {
 }
 
 func (c BufferConfig) SetLogSamplerConfig(LogSamplerConfig logsampler.Config) {
-	c.logSamplerConfig = LogSamplerConfig
+	c.logSampler = LogSamplerConfig.LogSamplers[0]
 }
