@@ -76,8 +76,8 @@ func (f ReceiverType) Type() component.Type {
 	return metadata.Type
 }
 
-func (f *ReceiverType) BufferConfig(cfg component.Config) file.BufferConfig {
-	return cfg.(*OtelNetStatsReceiverConfig).BufferConfig
+func (f ReceiverType) BufferConfig(cfg component.Config) *file.BufferConfig {
+	return &cfg.(*OtelNetStatsReceiverConfig).BufferConfig
 }
 
 // CreateDefaultConfig creates a config with type and version
