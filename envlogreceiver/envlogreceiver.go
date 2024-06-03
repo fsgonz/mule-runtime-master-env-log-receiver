@@ -24,20 +24,6 @@ func NewFactory() receiver.Factory {
 	return adapter.NewFactory(ReceiverType{}, metadata.LogsStability)
 }
 
-// ReceiverType implements stanza.LogReceiverType
-// to create a net usage stats receiver
-type ReceiverType struct{}
-
-// Type is the receiver type
-func (f ReceiverType) Type() component.Type {
-	return metadata.Type
-}
-
-// CreateDefaultConfig creates a config with type and version
-func (f ReceiverType) CreateDefaultConfig() component.Config {
-	return createDefaultConfig()
-}
-
 func createDefaultConfig() *OtelNetStatsReceiverConfig {
 	return &OtelNetStatsReceiverConfig{
 		BaseConfig: adapter.BaseConfig{
@@ -67,6 +53,10 @@ type OtelNetStatsReceiverConfig struct {
 	LogSamplerConfig logsampler.Config `mapstructure:",squash"`
 }
 
+// ReceiverType implements stanza.LogReceiverType
+// to create a net usage stats receiver
+type ReceiverType struct{}
+
 // InputConfig unmarshals the input operator
 func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
 	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).BufferConfig)
@@ -79,4 +69,18 @@ func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 // BaseConfig gets the base config from config, for now
 func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
 	return cfg.(*OtelNetStatsReceiverConfig).BaseConfig
+}
+
+// Type is the receiver type
+func (f ReceiverType) Type() component.Type {
+	return metadata.Type
+}
+
+func (f ReceiverType) BufferConfig(cfg component.Config) file.BufferConfig {
+	return cfg.(*OtelNetStatsReceiverConfig).BufferConfig
+}
+
+// CreateDefaultConfig creates a config with type and version
+func (f ReceiverType) CreateDefaultConfig() component.Config {
+	return createDefaultConfig()
 }

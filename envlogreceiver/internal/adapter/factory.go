@@ -6,6 +6,8 @@ package adapter
 import (
 	"context"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/pipeline"
@@ -21,6 +23,8 @@ type LogReceiverType interface {
 	CreateDefaultConfig() component.Config
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
+	LogSamplers(component.Config) logsampler.Config
+	BufferConfig(config component.Config) file.BufferConfig
 }
 
 // NewFactory creates a factory for a Stanza-based receiver
@@ -41,6 +45,8 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 	) (rcvr.Logs, error) {
 		inputCfg := logReceiverType.InputConfig(cfg)
 		baseCfg := logReceiverType.BaseConfig(cfg)
+		bufferCfg := logReceiverType.BufferConfig(cfg)
+		bufferCfg.SetLogSamplerConfig(logReceiverType.LogSamplers(cfg))
 		operators := append([]operator.Config{inputCfg}, baseCfg.Operators...)
 
 		emitterOpts := []helper.EmitterOption{}

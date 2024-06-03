@@ -1,6 +1,7 @@
 package file
 
 import (
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
@@ -59,7 +60,7 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 		InputOperator: inputOperator,
 	}
 
-	input.consumer, err = statsconsumer.Build(set, input.emit)
+	input.consumer, err = statsconsumer.Build(set, c.LogSamplerConfig, input.emit)
 
 	if err != nil {
 		return nil, err
@@ -80,6 +81,8 @@ type BufferConfig struct {
 	statsconsumer.StorageConsumerConfig `mapstructure:",squash"`
 
 	id string
+
+	LogSamplerConfig logsampler.Config
 }
 
 func (c BufferConfig) ID() string {
@@ -92,4 +95,8 @@ func (c BufferConfig) Type() string {
 
 func (c BufferConfig) SetID(ID string) {
 	c.id = ID
+}
+
+func (c BufferConfig) SetLogSamplerConfig(logSamplerConfig logsampler.Config) {
+	c.LogSamplerConfig = logSamplerConfig
 }
