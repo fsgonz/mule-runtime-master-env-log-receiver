@@ -1,4 +1,4 @@
-package file
+package buffer
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func (i *Input) Start(persister operator.Persister) error {
 	return i.consumer.Start(persister)
 }
 
-// Stop will stop the file monitoring process
+// Stop will stop the buffer monitoring process
 func (i *Input) Stop() error {
 	return i.consumer.Stop()
 }

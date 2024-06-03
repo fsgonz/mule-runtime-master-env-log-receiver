@@ -45,6 +45,10 @@ type StatsConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
+func NewDefaultStatsConsumerConfig() StatsConsumerConfig {
+	return StatsConsumerConfig{defaultPollInterval}
+}
+
 func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
 	emitter := &Emitter{
 		set:          set,
@@ -110,7 +114,7 @@ func (m *Emitter) Start(persister operator.Persister) error {
 	return nil
 }
 
-// Stop will stop the file monitoring process
+// Stop will stop the buffer monitoring process
 func (m *Emitter) Stop() error {
 	if m.cancel != nil {
 		m.cancel()

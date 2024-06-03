@@ -34,7 +34,7 @@ func emitToFile(logger *log.Logger) func(ctx context.Context, token []byte, attr
 	}
 }
 
-// Stop will stop the file monitoring process
+// Stop will stop the buffer monitoring process
 func (m *FileConsumerWrapper) Stop() error {
 	m.manager.Stop()
 	return nil

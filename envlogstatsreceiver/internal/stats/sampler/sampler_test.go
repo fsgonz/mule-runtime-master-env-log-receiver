@@ -15,7 +15,7 @@ import (
 )
 
 func TestFileBasedSampler(t *testing.T) {
-	t.Run("retrieves the sum of the received and transmit from a file.", func(t *testing.T) {
+	t.Run("retrieves the sum of the received and transmit from a buffer.", func(t *testing.T) {
 		sampler := NewFileBasedSampler("testdata/test1.data", &BreakLineScraper{})
 
 		want := uint64(1030)
@@ -26,7 +26,7 @@ func TestFileBasedSampler(t *testing.T) {
 		assert.Equal(t, want, got, "Received unexpected result")
 	})
 
-	t.Run("when a file does not exists an error is raised", func(t *testing.T) {
+	t.Run("when a buffer does not exists an error is raised", func(t *testing.T) {
 		const wanted = "open nonExistingFile.data: no such file or directory"
 		sampler := NewFileBasedSampler("nonExistingFile.data", &BreakLineScraper{})
 
@@ -48,14 +48,14 @@ func TestFileBasedSampler(t *testing.T) {
 }
 
 func TestFileBasedDeltaSampler(t *testing.T) {
-	t.Run("retrieves the delta of the sum of the received and transmit from a file.", func(t *testing.T) {
+	t.Run("retrieves the delta of the sum of the received and transmit from a buffer.", func(t *testing.T) {
 		tempFile, err := ioutil.TempFile("", "TestFileBasedDeltaSampler-*.txt")
-		assert.NoError(t, err, "Error on creating temporary file")
+		assert.NoError(t, err, "Error on creating temporary buffer")
 		tempFilePath := tempFile.Name()
 		defer os.Remove(tempFilePath)
 
 		err = addValuesToTempFile(tempFile, 200, 400)
-		assert.NoError(t, err, "Error on adding values to temp file")
+		assert.NoError(t, err, "Error on adding values to temp buffer")
 
 		sampler := NewFileBasedDeltaSampler(tempFilePath, &BreakLineScraper{}, &TestStorage{})
 
@@ -67,10 +67,10 @@ func TestFileBasedDeltaSampler(t *testing.T) {
 		assert.Equal(t, want, got, "Received unexpected result")
 
 		tempFile, err = os.OpenFile(tempFile.Name(), os.O_WRONLY|os.O_TRUNC, 0666)
-		assert.NoError(t, err, "Error on opening temp file")
+		assert.NoError(t, err, "Error on opening temp buffer")
 
 		err = addValuesToTempFile(tempFile, 400, 600)
-		assert.NoError(t, err, "Error on adding values to temp file")
+		assert.NoError(t, err, "Error on adding values to temp buffer")
 
 		want = uint64(400)
 
@@ -82,13 +82,13 @@ func TestFileBasedDeltaSampler(t *testing.T) {
 }
 
 func addValuesToTempFile(tempFile *os.File, readBytes uint64, transmitBytes uint64) error {
-	// Write the numbers to the file, each on a new line
+	// Write the numbers to the buffer, each on a new line
 	content := fmt.Sprintf("%d\n%d", readBytes, transmitBytes)
 	if _, err := tempFile.Write([]byte(content)); err != nil {
 		return err
 	}
 
-	// Close the file
+	// Close the buffer
 	if err := tempFile.Close(); err != nil {
 		return err
 	}

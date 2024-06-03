@@ -103,7 +103,7 @@ func NewLinuxNetworkDevicesFileScraper() *LinuxNetworkDevicesFileScraper {
 // information in the format of /proc/net/dev, and extracts statistics for the specified network interface.
 //
 // Parameters:
-// - data: An io.Reader that provides the content of the network devices file (e.g., /proc/net/dev).
+// - data: An io.Reader that provides the content of the network devices buffer (e.g., /proc/net/dev).
 //
 // Returns:
 // - networkStats: A struct containing the received and transmitted bytes for the specified network interface.
@@ -136,5 +136,5 @@ func (s *LinuxNetworkDevicesFileScraper) Scrape(data io.Reader) (networkStats Ne
 	}
 
 	// If the loop completes without finding the interface, return an error
-	return NetworkStats{}, fmt.Errorf("interface '%s' not found in file info", s.InterfaceName)
+	return NetworkStats{}, fmt.Errorf("interface '%s' not found in buffer info", s.InterfaceName)
 }

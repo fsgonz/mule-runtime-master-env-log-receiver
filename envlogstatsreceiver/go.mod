@@ -23,12 +23,9 @@ require (
 )
 
 require (
-	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/expr-lang/expr v1.16.7 // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
-	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
@@ -44,19 +41,12 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.101.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/prometheus/client_golang v1.19.1 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.53.0 // indirect
-	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/valyala/fastjson v1.6.4 // indirect
 	go.opentelemetry.io/collector v0.101.0 // indirect
 	go.opentelemetry.io/collector/confmap v0.101.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.8.0 // indirect
-	go.opentelemetry.io/otel/exporters/prometheus v0.48.0 // indirect
 	go.opentelemetry.io/otel/metric v1.26.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.26.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.26.0 // indirect
 	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect

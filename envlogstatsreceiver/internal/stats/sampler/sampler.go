@@ -49,11 +49,11 @@ type Storage interface {
 }
 
 // FileBasedDeltaSampler is a struct that manages the sampling of network statistics
-// from a file, calculates deltas between samples, and stores the last measurements in a statsconsumer backend.
+// from a buffer, calculates deltas between samples, and stores the last measurements in a statsconsumer backend.
 //
 // Fields:
 //   - FileBasedSampler: An instance of FileBasedSampler which handles the basic sampling
-//     operations from a file.
+//     operations from a buffer.
 //   - Storage: An instance of the Storage interface which is responsible for storing
 //     the last measurements.
 //
@@ -63,8 +63,8 @@ type Storage interface {
 //	var scraper scraper.NetworkStatsScraper
 //	var statsconsumer Storage
 //
-//	// URI of the file to be sampled
-//	uri := "/path/to/network/stats/file"
+//	// URI of the buffer to be sampled
+//	uri := "/path/to/network/stats/buffer"
 //
 //	// Create a new FileBasedDeltaSampler
 //	deltaSampler := NewFileBasedDeltaSampler(uri, scraper, statsconsumer)
@@ -80,7 +80,7 @@ type FileBasedDeltaSampler struct {
 // and storing the results in a statsconsumer backend.
 //
 // Parameters:
-//   - uri: The URI of the file where the network statistics will be sampled from.
+//   - uri: The URI of the buffer where the network statistics will be sampled from.
 //   - scraper: An implementation of the NetworkStatsScraper interface used to scrape
 //     network statistics.
 //   - statsconsumer: An implementation of the Storage interface where the sampled deltas
@@ -120,20 +120,20 @@ func (s *FileBasedDeltaSampler) Sample() (uint64, error) {
 }
 
 // FileBasedSampler is a struct that handles the sampling of network statistics
-// from a file specified by a URI using a given scraper.
+// from a buffer specified by a URI using a given scraper.
 //
 // Fields:
-//   - uri: The URI of the file from which network statistics will be sampled.
+//   - uri: The URI of the buffer from which network statistics will be sampled.
 //   - scraper: An implementation of the NetworkStatsScraper interface that retrieves
-//     the value from the specified file.
+//     the value from the specified buffer.
 //
 // Example usage:
 //
 //	// Assuming an implementation of the NetworkStatsScraper interface
 //	var scraper scraper.NetworkStatsScraper
 //
-//	// URI of the file to be sampled
-//	uri := "/path/to/network/stats/file"
+//	// URI of the buffer to be sampled
+//	uri := "/path/to/network/stats/buffer"
 //
 //	// Create a new FileBasedSampler
 //	sampler := FileBasedSampler{
@@ -149,10 +149,10 @@ func (s *FileBasedDeltaSampler) Sample() (uint64, error) {
 //	}
 //	fmt.Println("Scraped value:", value)
 type FileBasedSampler struct {
-	// uri is the URI for the file from which network statistics will be sampled.
+	// uri is the URI for the buffer from which network statistics will be sampled.
 	uri string
 	// scraper is an implementation of the NetworkStatsScraper interface used to
-	// retrieve the value from the specified file.
+	// retrieve the value from the specified buffer.
 	scraper scraper.NetworkStatsScraper
 }
 
@@ -160,9 +160,9 @@ type FileBasedSampler struct {
 // This function initializes a FileBasedSampler with the provided URI and scraper.
 //
 // Parameters:
-//   - uri: The URI of the file from which network statistics will be sampled.
+//   - uri: The URI of the buffer from which network statistics will be sampled.
 //   - statsScraper: An implementation of the NetworkStatsScraper interface that will be used
-//     to retrieve the network statistics from the specified file.
+//     to retrieve the network statistics from the specified buffer.
 //
 // Returns:
 // - A pointer to an instance of FileBasedSampler initialized with the given URI and scraper.
@@ -172,8 +172,8 @@ type FileBasedSampler struct {
 //	// Assuming an implementation of the NetworkStatsScraper interface
 //	var scraper scraper.NetworkStatsScraper
 //
-//	// URI of the file to be sampled
-//	uri := "/path/to/network/stats/file"
+//	// URI of the buffer to be sampled
+//	uri := "/path/to/network/stats/buffer"
 //
 //	// Create a new FileBasedSampler
 //	sampler := NewFileBasedSampler(uri, scraper)
@@ -201,7 +201,7 @@ func (s *FileBasedSampler) Sample() (uint64, error) {
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Println("Error on closing the stats file.")
+			log.Println("Error on closing the stats buffer.")
 		}
 	}(f)
 

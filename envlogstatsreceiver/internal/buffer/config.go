@@ -1,4 +1,4 @@
-package file
+package buffer
 
 import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
@@ -9,52 +9,53 @@ import (
 )
 
 const (
-	operatorType = "file_input"
+	operatorType = "stats_buffer"
 )
 
 func init() {
-	operator.Register(operatorType, func() operator.Builder { return NewFileInputConfig() })
+	operator.Register(operatorType, func() operator.Builder { return NewBufferConfig() })
 }
 
-// NewFileInputConfig creates a new BufferConfig with default values.
+// NewBufferConfig creates a new BufferConfig with default values.
 //
 // Returns:
 //   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
-func NewFileInputConfig() *BufferConfig {
-	return NewFileInputConfigWithID(operatorType)
+func NewBufferConfig() *BufferConfig {
+	return NewBufferConfigWithID(operatorType)
 }
 
-// NewFileInputConfigWithID creates a new BufferConfig with default values and a specific operator ID.
+// NewBufferConfigWithID creates a new BufferConfig with default values and a specific operator ID.
 //
 // Parameters:
 //   - operatorID (string): The ID to be used for the operator.
 //
 // Returns:
 //   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
-func NewFileInputConfigWithID(operatorID string) *BufferConfig {
+func NewBufferConfigWithID(operatorID string) *BufferConfig {
 	return &BufferConfig{
-		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
-		FileConsumerConfig: *statsconsumer.NewConsumerConfig(),
+		InputConfig:         helper.NewInputConfig(operatorID, operatorType),
+		FileConsumerConfig:  *statsconsumer.NewConsumerConfig(),
+		StatsConsumerConfig: statsconsumer.NewDefaultStatsConsumerConfig(),
 	}
 }
 
-// Build constructs the file input operator from the supplied configuration.
+// Build constructs the buffer input operator from the supplied configuration.
 //
 // Parameters:
 //   - set (component.TelemetrySettings): The telemetry settings to be used during the build process.
 //
 // Returns:
-//   - operator.Operator: The constructed file input operator.
+//   - operator.Operator: The constructed buffer input operator.
 //   - error: An error that occurred during the build process, or nil if the build was successful.
 func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
 
-	// Build the file statsconsumer with the specified configuration and emit function
+	// Build the buffer statsconsumer with the specified configuration and emit function
 	inputOperator, err := c.InputConfig.Build(set)
 	if err != nil {
 		return nil, err
 	}
 
-	// Build the file storage with the specified configuration and emit function
+	// Build the buffer storage with the specified configuration and emit function
 
 	input := &Input{
 		InputOperator: inputOperator,
@@ -69,12 +70,12 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 	return input, nil
 }
 
-// BufferConfig defines the configuration for the file input operator.
+// BufferConfig defines the configuration for the buffer input operator.
 type BufferConfig struct {
 	// InputConfig embeds the helper.InputConfig struct, which provides basic input operator configuration.
 	helper.InputConfig `mapstructure:",squash"`
 
-	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
+	// Config embeds the fileconsumer.Config struct, which provides configuration specific to buffer consumption.
 	statsconsumer.FileConsumerConfig `mapstructure:",squash"`
 
 	// Config embeds the statsconsumer consuemr
