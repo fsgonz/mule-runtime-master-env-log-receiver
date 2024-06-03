@@ -59,7 +59,11 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 		InputOperator: inputOperator,
 	}
 
-	statsconsumer.Build(set, input.emit)
+	input.consumer, err = statsconsumer.Build(set, input.emit)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return input, nil
 }
