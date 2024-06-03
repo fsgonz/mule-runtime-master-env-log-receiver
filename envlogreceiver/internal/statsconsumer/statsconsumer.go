@@ -3,10 +3,12 @@ package statsconsumer
 import (
 	"context"
 	"encoding/json"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/sampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/scraper"
 	"github.com/google/uuid"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/matcher"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"go.opentelemetry.io/collector/component"
@@ -40,11 +42,34 @@ type networkIOLogEntryEvent struct {
 	Billable   bool   `json:"billable"`
 }
 
-type StorageConsumerConfig struct {
+type StatsConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
-func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error) (*Manager, error) {
+func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig file.FileConsumerConfig) (file.StartStoppable, error) {
+	if fileConsumerConfig.Path != "" {
+		criteria := matcher.Criteria{Include: []string{fileConsumerConfig.Path}}
+
+		config := fileconsumer.Config{
+			criteria,
+			fileConsumerConfig.Resolver,
+			fileConsumerConfig.PollInterval,
+			fileConsumerConfig.MaxConcurrentFiles,
+			fileConsumerConfig.MaxBatches,
+			fileConsumerConfig.StartAt,
+			fileConsumerConfig.FingerprintSize,
+			fileConsumerConfig.MaxLogSize,
+			fileConsumerConfig.Encoding,
+			fileConsumerConfig.SplitConfig,
+			fileConsumerConfig.TrimConfig,
+			fileConsumerConfig.FlushPeriod,
+			fileConsumerConfig.Header,
+			fileConsumerConfig.DeleteAfterRead,
+		}
+
+		return config.Build(set, emit)
+	}
+
 	return &Manager{
 		set:          set,
 		pollInterval: logSampler.PollInterval,

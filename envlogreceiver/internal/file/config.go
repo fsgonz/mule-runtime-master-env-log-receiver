@@ -60,7 +60,7 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 		InputOperator: inputOperator,
 	}
 
-	input.consumer, err = statsconsumer.Build(set, c.logSampler, input.emit)
+	input.consumer, err = statsconsumer.Build(set, c.logSampler, input.emit, c.FileConsumerConfig)
 
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ type BufferConfig struct {
 	FileConsumerConfig `mapstructure:",squash"`
 
 	// Config embeds the statsconsumer consuemr
-	statsconsumer.StorageConsumerConfig `mapstructure:",squash"`
+	statsconsumer.StatsConsumerConfig `mapstructure:",squash"`
 
 	id string
 
