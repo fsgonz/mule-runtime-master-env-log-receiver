@@ -3,6 +3,7 @@ package file
 import (
 	"context"
 	"fmt"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/entry"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
@@ -11,12 +12,7 @@ import (
 
 type Input struct {
 	helper.InputOperator
-	consumer StartStoppable
-}
-
-type StartStoppable interface {
-	Start(persister operator.Persister) error
-	Stop() error
+	consumer statsconsumer.StartStoppable
 }
 
 func (i *Input) Start(persister operator.Persister) error {
