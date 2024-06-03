@@ -6,7 +6,6 @@ package adapter
 import (
 	"context"
 	"fmt"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"sync"
 	"time"
 
@@ -39,7 +38,6 @@ type receiver struct {
 
 	storageID     *component.ID
 	storageClient storage.Client
-	input         helper.WriterOperator
 }
 
 // Ensure this receiver adheres to required interface
@@ -52,7 +50,7 @@ func (r *receiver) Start(ctx context.Context, host component.Host) error {
 	r.set.Logger.Info("Starting stanza receiver")
 
 	if err := r.setStorageClient(ctx, host); err != nil {
-		return fmt.Errorf("storage client: %w", err)
+		return fmt.Errorf("statsconsumer client: %w", err)
 	}
 
 	if err := r.pipe.Start(r.storageClient); err != nil {
@@ -70,7 +68,7 @@ func (r *receiver) Start(ctx context.Context, host component.Host) error {
 
 	// ...
 	// * second one which reads all the logs produced by the converter
-	//   (aggregated by Resource) and then calls storage to storage them.
+	//   (aggregated by Resource) and then calls statsconsumer to statsconsumer them.
 	r.wg.Add(1)
 	go r.consumerLoop(rctx)
 
@@ -80,10 +78,6 @@ func (r *receiver) Start(ctx context.Context, host component.Host) error {
 	// a set of log entries to be available for reading in converter's out
 	// channel. In order to prevent backpressure, reading from the converter
 	// channel and batching are done in those 2 goroutines.
-
-	if r.sampler != "" {
-		go r.samplerLoop(rctx, r.storageClient)
-	}
 
 	return nil
 }
@@ -159,25 +153,4 @@ func (r *receiver) Shutdown(ctx context.Context) error {
 		return multierr.Combine(pipelineErr, clientErr)
 	}
 	return pipelineErr
-}
-
-func (r *receiver) samplerLoop(ctx context.Context, persister operator.Persister) {
-	samplerEmitter, err := SamplerEmitterFactory(r.samplerURI, persister, r.emitter, r.input)
-
-	if err != nil {
-		r.set.Logger.Debug("Error on sampler loop creation", zap.Error(err))
-		return
-	}
-
-	ticker := time.NewTicker(r.samplerPollInterval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			samplerEmitter.Emit(ctx)
-		case <-ctx.Done():
-			return
-		}
-	}
 }

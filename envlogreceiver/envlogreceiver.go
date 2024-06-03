@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	operatorType = "file_input"
+	operatorType = "stats_input"
 )
 
 // NewFactory creates a factory for receiver
@@ -52,18 +52,13 @@ func createDefaultConfig() *OtelNetStatsReceiverConfig {
 	}
 }
 
-// BaseConfig gets the base config from config, for now
-func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
-	return cfg.(*OtelNetStatsReceiverConfig).BaseConfig
-}
-
 // OtelNetStatsReceiverConfig represents the configuration for the OpenTelemetry NetStats Logs Receiver.
 type OtelNetStatsReceiverConfig struct {
 	// InputConfig provides a basic implementation of an input operator config.
 	InputConfig helper.InputConfig `mapstructure:",squash"`
 
 	// InputConfig embeds the configuration for the network statistics input.
-	BufferConfig file.BeufferConfig `mapstructure:"buffer"`
+	BufferConfig file.BufferConfig `mapstructure:"buffer"`
 
 	// BaseConfig embeds the base configuration for the logs receiver.
 	adapter.BaseConfig `mapstructure:",squash"`
@@ -74,19 +69,14 @@ type OtelNetStatsReceiverConfig struct {
 
 // InputConfig unmarshals the input operator
 func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
-	cfg.(*OtelNetStatsReceiverConfig).BufferConfig.StorageConsumerConfig.PollInterval = cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig.LogSamplers[0].PollInterval
-	cfg.(*OtelNetStatsReceiverConfig).BufferConfig.InputConfig = cfg.(*OtelNetStatsReceiverConfig).InputConfig
 	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).BufferConfig)
-}
-
-func (f ReceiverType) ConsumerConfig(cfg component.Config) file.FileConsumerConfig {
-	return *&cfg.(*OtelNetStatsReceiverConfig).BufferConfig.FileConsumerConfig
 }
 
 func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 	return cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig
 }
 
-func (f ReceiverType) Input(cfg component.Config) helper.WriterOperator {
-	return cfg.(*OtelNetStatsReceiverConfig).BufferConfig.Input()
+// BaseConfig gets the base config from config, for now
+func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
+	return cfg.(*OtelNetStatsReceiverConfig).BaseConfig
 }

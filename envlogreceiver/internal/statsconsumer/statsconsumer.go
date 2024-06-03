@@ -1,4 +1,4 @@
-package storage
+package statsconsumer
 
 import (
 	"context"
@@ -44,11 +44,10 @@ type StorageConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
-func (c StorageConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*Manager, error) {
+func Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*Manager, error) {
 	return &Manager{
-		set:          set,
-		pollInterval: c.PollInterval,
-		emit:         emit,
+		set:  set,
+		emit: emit,
 	}, nil
 }
 

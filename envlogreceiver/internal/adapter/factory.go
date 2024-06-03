@@ -6,8 +6,6 @@ package adapter
 import (
 	"context"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/pipeline"
@@ -15,7 +13,6 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	rcvr "go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receiverhelper"
-	"time"
 )
 
 // LogReceiverType is the interface used by stanza-based log receivers
@@ -24,9 +21,6 @@ type LogReceiverType interface {
 	CreateDefaultConfig() component.Config
 	BaseConfig(component.Config) BaseConfig
 	InputConfig(component.Config) operator.Config
-	LogSamplers(component.Config) logsampler.Config
-	ConsumerConfig(component.Config) file.FileConsumerConfig
-	Input(cfg component.Config) helper.WriterOperator
 }
 
 // NewFactory creates a factory for a Stanza-based receiver
@@ -47,9 +41,6 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 	) (rcvr.Logs, error) {
 		inputCfg := logReceiverType.InputConfig(cfg)
 		baseCfg := logReceiverType.BaseConfig(cfg)
-		logSamplerCfg := logReceiverType.LogSamplers(cfg)
-		input := logReceiverType.Input(cfg)
-
 		operators := append([]operator.Config{inputCfg}, baseCfg.Operators...)
 
 		emitterOpts := []helper.EmitterOption{}
@@ -59,15 +50,6 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 
 		if baseCfg.flushInterval > 0 {
 			emitterOpts = append(emitterOpts, helper.WithFlushInterval(baseCfg.flushInterval))
-		}
-
-		sampler := ""
-		samplerUri := logReceiverType.ConsumerConfig(cfg).Path
-		samplerPollInterval := time.Minute
-
-		if len(logSamplerCfg.LogSamplers) != 0 {
-			sampler = logSamplerCfg.LogSamplers[0].Metric
-			samplerPollInterval = logSamplerCfg.LogSamplers[0].PollInterval
 		}
 
 		emitter := helper.NewLogEmitter(params.TelemetrySettings, emitterOpts...)
@@ -93,18 +75,14 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		}
 
 		return &receiver{
-			set:                 params.TelemetrySettings,
-			id:                  params.ID,
-			pipe:                pipe,
-			emitter:             emitter,
-			consumer:            consumerretry.NewLogs(baseCfg.RetryOnFailure, params.Logger, nextConsumer),
-			converter:           converter,
-			obsrecv:             obsrecv,
-			storageID:           baseCfg.StorageID,
-			sampler:             sampler,
-			samplerPollInterval: samplerPollInterval,
-			samplerURI:          samplerUri,
-			input:               input,
+			set:       params.TelemetrySettings,
+			id:        params.ID,
+			pipe:      pipe,
+			emitter:   emitter,
+			consumer:  consumerretry.NewLogs(baseCfg.RetryOnFailure, params.Logger, nextConsumer),
+			converter: converter,
+			obsrecv:   obsrecv,
+			storageID: baseCfg.StorageID,
 		}, nil
 	}
 }

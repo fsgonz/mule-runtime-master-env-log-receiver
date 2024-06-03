@@ -13,7 +13,7 @@ import (
 // BaseConfig is the common configuration of a stanza-based receiver
 type BaseConfig struct {
 	Operators      []operator.Config    `mapstructure:"operators"`
-	StorageID      *component.ID        `mapstructure:"storage"`
+	StorageID      *component.ID        `mapstructure:"statsconsumer"`
 	RetryOnFailure consumerretry.Config `mapstructure:"retry_on_failure"`
 
 	// currently not configurable by users, but available for benchmarking

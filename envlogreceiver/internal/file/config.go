@@ -1,9 +1,8 @@
 package file
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/storage"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"
 )
 
@@ -15,24 +14,23 @@ func init() {
 	operator.Register(operatorType, func() operator.Builder { return NewFileInputConfig() })
 }
 
-// NewFileInputConfig creates a new BeufferConfig with default values.
+// NewFileInputConfig creates a new BufferConfig with default values.
 //
 // Returns:
-//   - *BeufferConfig: A pointer to the newly created BeufferConfig with default values.
-func NewFileInputConfig() *BeufferConfig {
+//   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
+func NewFileInputConfig() *BufferConfig {
 	return NewFileInputConfigWithID(operatorType)
 }
 
-// NewFileInputConfigWithID creates a new BeufferConfig with default values and a specific operator ID.
+// NewFileInputConfigWithID creates a new BufferConfig with default values and a specific operator ID.
 //
 // Parameters:
 //   - operatorID (string): The ID to be used for the operator.
 //
 // Returns:
-//   - *BeufferConfig: A pointer to the newly created BeufferConfig with default values.
-func NewFileInputConfigWithID(operatorID string) *BeufferConfig {
-	return &BeufferConfig{
-		InputConfig:        helper.NewInputConfig(operatorID, operatorType),
+//   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
+func NewFileInputConfigWithID(operatorID string) *BufferConfig {
+	return &BufferConfig{
 		FileConsumerConfig: *NewConsumerConfig(),
 	}
 }
@@ -45,52 +43,36 @@ func NewFileInputConfigWithID(operatorID string) *BeufferConfig {
 // Returns:
 //   - operator.Operator: The constructed file input operator.
 //   - error: An error that occurred during the build process, or nil if the build was successful.
-func (c BeufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
-	// Build the input operator from the configuration
-	inputOperator, err := c.InputConfig.Build(set)
-	if err != nil {
-		return nil, err
-	}
+func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
 
-	// Build the file storage with the specified configuration and emit function
+	// Build the file statsconsumer with the specified configuration and emit function
 
-	input := &Input{
-		InputOperator: inputOperator,
-	}
+	input := &Input{}
 
-	if c.FileConsumerConfig.Path != "" {
-		c.input = input.InputOperator.WriterOperator
-		input.consumer, err = c.FileConsumerConfig.Build(set, input.emit)
-	} else {
-		input.consumer, err = c.StorageConsumerConfig.Build(set, input.emit)
-	}
-
-	if err != nil {
-		return nil, err
-	}
+	statsconsumer.Build(set, input.emit)
 
 	return input, nil
 }
 
-// Input returns the constructed Input operator from the BeufferConfig.
-//
-// Returns:
-//   - Input: The input operator that was constructed from the BeufferConfig.
-func (c BeufferConfig) Input() helper.WriterOperator {
-	return c.input
-}
-
-// BeufferConfig defines the configuration for the file input operator.
-type BeufferConfig struct {
-	// InputConfig embeds the helper.InputConfig struct, which provides basic input operator configuration.
-	helper.InputConfig `mapstructure:",squash"`
-
+// BufferConfig defines the configuration for the file input operator.
+type BufferConfig struct {
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to file consumption.
 	FileConsumerConfig `mapstructure:",squash"`
 
-	// Config embeds the storage consuemr
-	storage.StorageConsumerConfig `mapstructure:",squash"`
+	// Config embeds the statsconsumer consuemr
+	statsconsumer.StorageConsumerConfig `mapstructure:",squash"`
 
-	// input holds the constructed Input operator.
-	input helper.WriterOperator
+	id string
+}
+
+func (c BufferConfig) ID() string {
+	return operatorType
+}
+
+func (c BufferConfig) Type() string {
+	return c.id
+}
+
+func (c BufferConfig) SetID(ID string) {
+	c.id = ID
 }

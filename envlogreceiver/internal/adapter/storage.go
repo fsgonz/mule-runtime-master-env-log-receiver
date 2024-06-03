@@ -18,12 +18,12 @@ func GetStorageClient(ctx context.Context, host component.Host, storageID *compo
 
 	extension, ok := host.GetExtensions()[*storageID]
 	if !ok {
-		return nil, fmt.Errorf("storage extension '%s' not found", storageID)
+		return nil, fmt.Errorf("statsconsumer extension '%s' not found", storageID)
 	}
 
 	storageExtension, ok := extension.(storage.Extension)
 	if !ok {
-		return nil, fmt.Errorf("non-storage extension '%s' found", storageID)
+		return nil, fmt.Errorf("non-statsconsumer extension '%s' found", storageID)
 	}
 
 	return storageExtension.GetClient(ctx, component.KindReceiver, componentID, "")

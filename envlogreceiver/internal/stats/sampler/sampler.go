@@ -49,7 +49,7 @@ type Storage interface {
 }
 
 // FileBasedDeltaSampler is a struct that manages the sampling of network statistics
-// from a file, calculates deltas between samples, and stores the last measurements in a storage backend.
+// from a file, calculates deltas between samples, and stores the last measurements in a statsconsumer backend.
 //
 // Fields:
 //   - FileBasedSampler: An instance of FileBasedSampler which handles the basic sampling
@@ -61,13 +61,13 @@ type Storage interface {
 //
 //	// Assuming implementations of NetworkStatsScraper and Storage interfaces
 //	var scraper scraper.NetworkStatsScraper
-//	var storage Storage
+//	var statsconsumer Storage
 //
 //	// URI of the file to be sampled
 //	uri := "/path/to/network/stats/file"
 //
 //	// Create a new FileBasedDeltaSampler
-//	deltaSampler := NewFileBasedDeltaSampler(uri, scraper, storage)
+//	deltaSampler := NewFileBasedDeltaSampler(uri, scraper, statsconsumer)
 //
 //	// Use deltaSampler to start sampling deltas
 type FileBasedDeltaSampler struct {
@@ -77,13 +77,13 @@ type FileBasedDeltaSampler struct {
 
 // NewFileBasedDeltaSampler creates a new instance of FileBasedDeltaSampler.
 // This sampler is responsible for sampling network statistics, calculating deltas,
-// and storing the results in a storage backend.
+// and storing the results in a statsconsumer backend.
 //
 // Parameters:
 //   - uri: The URI of the file where the network statistics will be sampled from.
 //   - scraper: An implementation of the NetworkStatsScraper interface used to scrape
 //     network statistics.
-//   - storage: An implementation of the Storage interface where the sampled deltas
+//   - statsconsumer: An implementation of the Storage interface where the sampled deltas
 //     will be stored.
 //
 // Returns:
