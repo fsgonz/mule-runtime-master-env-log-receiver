@@ -89,14 +89,14 @@ func (c BufferConfig) ID() string {
 	return operatorType
 }
 
-func (c BufferConfig) Type() string {
+func (c *BufferConfig) Type() string {
 	return c.id
 }
 
-func (c BufferConfig) SetID(ID string) {
+func (c *BufferConfig) SetID(ID string) {
 	c.id = ID
 }
 
-func (c BufferConfig) SetLogSamplerConfig(LogSamplerConfig logsampler.Config) {
+func (c *BufferConfig) SetLogSamplerConfig(LogSamplerConfig logsampler.Config) {
 	c.logSampler = LogSamplerConfig.LogSamplers[0]
 }
