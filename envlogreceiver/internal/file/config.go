@@ -82,7 +82,7 @@ type BufferConfig struct {
 
 	id string
 
-	LogSamplerConfig logsampler.Config
+	logSamplerConfig logsampler.Config
 }
 
 func (c BufferConfig) ID() string {
@@ -97,6 +97,6 @@ func (c BufferConfig) SetID(ID string) {
 	c.id = ID
 }
 
-func (c BufferConfig) SetLogSamplerConfig(logSamplerConfig logsampler.Config) {
-	c.LogSamplerConfig = logSamplerConfig
+func (c BufferConfig) SetLogSamplerConfig(LogSamplerConfig logsampler.Config) {
+	c.logSamplerConfig = LogSamplerConfig
 }
