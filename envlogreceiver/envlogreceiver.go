@@ -58,25 +58,25 @@ type OtelNetStatsReceiverConfig struct {
 type ReceiverType struct{}
 
 // InputConfig unmarshals the input operator
-func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
+func (f *ReceiverType) InputConfig(cfg component.Config) operator.Config {
 	return operator.NewConfig(&cfg.(*OtelNetStatsReceiverConfig).BufferConfig)
 }
 
-func (f ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
+func (f *ReceiverType) LogSamplers(cfg component.Config) logsampler.Config {
 	return cfg.(*OtelNetStatsReceiverConfig).LogSamplerConfig
 }
 
 // BaseConfig gets the base config from config, for now
-func (f ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
+func (f *ReceiverType) BaseConfig(cfg component.Config) adapter.BaseConfig {
 	return cfg.(*OtelNetStatsReceiverConfig).BaseConfig
 }
 
 // Type is the receiver type
-func (f ReceiverType) Type() component.Type {
+func (f *ReceiverType) Type() component.Type {
 	return metadata.Type
 }
 
-func (f ReceiverType) BufferConfig(cfg component.Config) file.BufferConfig {
+func (f *ReceiverType) BufferConfig(cfg component.Config) file.BufferConfig {
 	return cfg.(*OtelNetStatsReceiverConfig).BufferConfig
 }
 
