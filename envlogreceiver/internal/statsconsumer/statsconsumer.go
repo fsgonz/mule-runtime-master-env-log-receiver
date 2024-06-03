@@ -3,7 +3,6 @@ package statsconsumer
 import (
 	"context"
 	"encoding/json"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/file"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/sampler"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/scraper"
@@ -46,7 +45,7 @@ type StatsConsumerConfig struct {
 	PollInterval time.Duration `mapstructure:"poll_interval,omitempty"`
 }
 
-func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (file.StartStoppable, error) {
+func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
 	if fileConsumerConfig.Path != "" {
 		criteria := matcher.Criteria{Include: []string{fileConsumerConfig.Path}}
 
