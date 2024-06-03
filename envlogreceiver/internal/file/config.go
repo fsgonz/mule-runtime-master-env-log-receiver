@@ -48,8 +48,16 @@ func NewFileInputConfigWithID(operatorID string) *BufferConfig {
 func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
 
 	// Build the file statsconsumer with the specified configuration and emit function
+	inputOperator, err := c.InputConfig.Build(set)
+	if err != nil {
+		return nil, err
+	}
 
-	input := &Input{}
+	// Build the file storage with the specified configuration and emit function
+
+	input := &Input{
+		InputOperator: inputOperator,
+	}
 
 	statsconsumer.Build(set, input.emit)
 
