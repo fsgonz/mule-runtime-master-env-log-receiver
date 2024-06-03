@@ -46,6 +46,12 @@ type StatsConsumerConfig struct {
 }
 
 func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
+	emitter := &Emitter{
+		set:          set,
+		pollInterval: logSampler.PollInterval,
+		emit:         emit,
+	}
+
 	if fileConsumerConfig.Path != "" {
 		criteria := matcher.Criteria{Include: []string{fileConsumerConfig.Path}}
 
@@ -66,17 +72,19 @@ func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, em
 			fileConsumerConfig.DeleteAfterRead,
 		}
 
-		return config.Build(set, emit)
+		manager, err := config.Build(set, emit)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return &FileConsumerWrapper{*manager, *emitter, fileConsumerConfig.Path}, nil
 	}
 
-	return &Manager{
-		set:          set,
-		pollInterval: logSampler.PollInterval,
-		emit:         emit,
-	}, nil
+	return emitter, nil
 }
 
-type Manager struct {
+type Emitter struct {
 	// Deprecated [v0.101.0]
 	*zap.SugaredLogger
 
@@ -91,7 +99,7 @@ type Manager struct {
 	emit         func(ctx context.Context, token []byte, attrs map[string]any) error
 }
 
-func (m *Manager) Start(persister operator.Persister) error {
+func (m *Emitter) Start(persister operator.Persister) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	m.cancel = cancel
 	m.persister = persister
@@ -103,7 +111,7 @@ func (m *Manager) Start(persister operator.Persister) error {
 }
 
 // Stop will stop the file monitoring process
-func (m *Manager) Stop() error {
+func (m *Emitter) Stop() error {
 	if m.cancel != nil {
 		m.cancel()
 		m.cancel = nil
@@ -114,7 +122,7 @@ func (m *Manager) Stop() error {
 
 // startPoller kicks off a goroutine that will poll the filesystem periodically,
 // checking if there are new files or new logs in the watched files
-func (m *Manager) startPoller(ctx context.Context) {
+func (m *Emitter) startPoller(ctx context.Context) {
 	m.wg.Add(1)
 	go func() {
 		defer m.wg.Done()
@@ -134,7 +142,7 @@ func (m *Manager) startPoller(ctx context.Context) {
 }
 
 // poll checks all the watched paths for new entries
-func (m *Manager) poll(ctx context.Context) {
+func (m *Emitter) poll(ctx context.Context) {
 	byteSlice, _ := m.persister.Get(ctx, logsampler.LastCountKey)
 
 	sampler := sampler.NewFileBasedSampler("/proc/net/dev", scraper.NewLinuxNetworkDevicesFileScraper())
