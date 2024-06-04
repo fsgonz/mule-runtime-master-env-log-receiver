@@ -3,7 +3,6 @@ package statsconsumer
 import (
 	"context"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/attrs"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/matcher"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/split"
