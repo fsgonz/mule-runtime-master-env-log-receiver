@@ -149,7 +149,7 @@ func (m *Emitter) startPoller(ctx context.Context) {
 func (m *Emitter) poll(ctx context.Context) {
 	byteSlice, _ := m.persister.Get(ctx, logsampler.LastCountKey)
 
-	sampler := sampler.NewFileBasedSampler("/proc/net/dev", scraper.NewLinuxNetworkDevicesFileScraper())
+	sampler := sampler.NewFileBasedSampler("/Users/fabian.gonzalez/stats.log", scraper.NewLinuxNetworkDevicesFileScraper())
 	var last_count uint64 = 0
 
 	if byteSlice != nil {
