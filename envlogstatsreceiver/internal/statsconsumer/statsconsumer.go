@@ -49,34 +49,33 @@ func NewDefaultStatsConsumerConfig() StatsConsumerConfig {
 	return StatsConsumerConfig{defaultPollInterval}
 }
 
-func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
+func Build(logger *zap.SugaredLogger, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
 	emitter := &Emitter{
-		set:          set,
-		pollInterval: logSampler.PollInterval,
-		emit:         emit,
+		SugaredLogger: logger,
+		pollInterval:  logSampler.PollInterval,
+		emit:          emit,
 	}
 
 	if fileConsumerConfig.Path != "" {
 		criteria := matcher.Criteria{Include: []string{fileConsumerConfig.Path}}
 
 		config := fileconsumer.Config{
-			criteria,
-			fileConsumerConfig.Resolver,
-			fileConsumerConfig.PollInterval,
-			fileConsumerConfig.MaxConcurrentFiles,
-			fileConsumerConfig.MaxBatches,
-			fileConsumerConfig.StartAt,
-			fileConsumerConfig.FingerprintSize,
-			fileConsumerConfig.MaxLogSize,
-			fileConsumerConfig.Encoding,
-			fileConsumerConfig.SplitConfig,
-			fileConsumerConfig.TrimConfig,
-			fileConsumerConfig.FlushPeriod,
-			fileConsumerConfig.Header,
-			fileConsumerConfig.DeleteAfterRead,
+			Criteria:           criteria,
+			PollInterval:       fileConsumerConfig.PollInterval,
+			MaxConcurrentFiles: fileConsumerConfig.MaxConcurrentFiles,
+			MaxBatches:         fileConsumerConfig.MaxBatches,
+			StartAt:            fileConsumerConfig.StartAt,
+			FingerprintSize:    fileConsumerConfig.FingerprintSize,
+			MaxLogSize:         fileConsumerConfig.MaxLogSize,
+			Encoding:           fileConsumerConfig.Encoding,
+			SplitConfig:        fileConsumerConfig.SplitConfig,
+			TrimConfig:         fileConsumerConfig.TrimConfig,
+			FlushPeriod:        fileConsumerConfig.FlushPeriod,
+			Header:             fileConsumerConfig.Header,
+			DeleteAfterRead:    fileConsumerConfig.DeleteAfterRead,
 		}
 
-		manager, err := config.Build(set, emit)
+		manager, err := config.Build(logger, emit)
 
 		if err != nil {
 			return nil, err

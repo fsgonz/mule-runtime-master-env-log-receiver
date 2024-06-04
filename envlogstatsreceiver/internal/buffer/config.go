@@ -5,7 +5,7 @@ import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
-	"go.opentelemetry.io/collector/component"
+	"go.uber.org/zap"
 )
 
 const (
@@ -47,10 +47,10 @@ func NewBufferConfigWithID(operatorID string) *BufferConfig {
 // Returns:
 //   - operator.Operator: The constructed buffer input operator.
 //   - error: An error that occurred during the build process, or nil if the build was successful.
-func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator, error) {
+func (c BufferConfig) Build(logger *zap.SugaredLogger) (operator.Operator, error) {
 
 	// Build the buffer statsconsumer with the specified configuration and emit function
-	inputOperator, err := c.InputConfig.Build(set)
+	inputOperator, err := c.InputConfig.Build(logger)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c BufferConfig) Build(set component.TelemetrySettings) (operator.Operator,
 		InputOperator: inputOperator,
 	}
 
-	input.consumer, err = statsconsumer.Build(set, c.logSampler, input.emit, c.FileConsumerConfig)
+	input.consumer, err = statsconsumer.Build(logger, c.logSampler, input.emit, c.FileConsumerConfig)
 
 	if err != nil {
 		return nil, err

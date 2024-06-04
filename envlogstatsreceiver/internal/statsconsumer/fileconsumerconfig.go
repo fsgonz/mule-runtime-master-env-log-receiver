@@ -7,7 +7,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/split"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/trim"
-	"go.opentelemetry.io/collector/component"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -21,20 +21,19 @@ const (
 )
 
 type FileConsumerConfig struct {
-	Path               string `mapstructure:"path,omitempty"`
-	attrs.Resolver     `mapstructure:",squash"`
+	Path               string                     `mapstructure:"path,omitempty"`
 	PollInterval       time.Duration              `mapstructure:"poll_interval,omitempty"`
-	MaxConcurrentFiles int                        `mapstructure:"max_concurrent_files,omitempty"`
-	MaxBatches         int                        `mapstructure:"max_batches,omitempty"`
 	StartAt            string                     `mapstructure:"start_at,omitempty"`
 	FingerprintSize    helper.ByteSize            `mapstructure:"fingerprint_size,omitempty"`
 	MaxLogSize         helper.ByteSize            `mapstructure:"max_log_size,omitempty"`
-	Encoding           string                     `mapstructure:"encoding,omitempty"`
+	MaxConcurrentFiles int                        `mapstructure:"max_concurrent_files,omitempty"`
+	MaxBatches         int                        `mapstructure:"max_batches,omitempty"`
+	DeleteAfterRead    bool                       `mapstructure:"delete_after_read,omitempty"`
 	SplitConfig        split.Config               `mapstructure:"multiline,omitempty"`
 	TrimConfig         trim.Config                `mapstructure:",squash,omitempty"`
+	Encoding           string                     `mapstructure:"encoding,omitempty"`
 	FlushPeriod        time.Duration              `mapstructure:"force_flush_period,omitempty"`
 	Header             *fileconsumer.HeaderConfig `mapstructure:"header,omitempty"`
-	DeleteAfterRead    bool                       `mapstructure:"delete_after_read,omitempty"`
 }
 
 func NewConsumerConfig() *FileConsumerConfig {
@@ -46,31 +45,27 @@ func NewConsumerConfig() *FileConsumerConfig {
 		MaxLogSize:         DefaultMaxLogSize,
 		Encoding:           defaultEncoding,
 		FlushPeriod:        DefaultFlushPeriod,
-		Resolver: attrs.Resolver{
-			IncludeFileName: true,
-		},
 	}
 }
 
-func (c FileConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
+func (c FileConsumerConfig) Build(logger *zap.SugaredLogger, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
 	criteria := matcher.Criteria{Include: []string{c.Path}}
 
 	config := fileconsumer.Config{
-		criteria,
-		c.Resolver,
-		c.PollInterval,
-		c.MaxConcurrentFiles,
-		c.MaxBatches,
-		c.StartAt,
-		c.FingerprintSize,
-		c.MaxLogSize,
-		c.Encoding,
-		c.SplitConfig,
-		c.TrimConfig,
-		c.FlushPeriod,
-		c.Header,
-		c.DeleteAfterRead,
+		Criteria:           criteria,
+		PollInterval:       c.PollInterval,
+		MaxConcurrentFiles: c.MaxConcurrentFiles,
+		MaxBatches:         c.MaxBatches,
+		StartAt:            c.StartAt,
+		FingerprintSize:    c.FingerprintSize,
+		MaxLogSize:         c.MaxLogSize,
+		Encoding:           c.Encoding,
+		SplitConfig:        c.SplitConfig,
+		TrimConfig:         c.TrimConfig,
+		FlushPeriod:        c.FlushPeriod,
+		Header:             c.Header,
+		DeleteAfterRead:    c.DeleteAfterRead,
 	}
 
-	return config.Build(set, emit)
+	return config.Build(logger, emit)
 }
