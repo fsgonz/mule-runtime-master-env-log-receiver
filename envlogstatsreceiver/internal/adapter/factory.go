@@ -8,13 +8,14 @@ import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/buffer"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/consumerretry"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/logsampler"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/pipeline"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	rcvr "go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receiverhelper"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/pipeline"
 )
 
 // LogReceiverType is the interface used by stanza-based log receivers
@@ -38,7 +39,7 @@ func NewFactory(logReceiverType LogReceiverType, sl component.StabilityLevel) rc
 
 func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 	return func(
-		_ context.Context,
+		ctx context.Context,
 		params rcvr.CreateSettings,
 		cfg component.Config,
 		nextConsumer consumer.Logs,
@@ -49,20 +50,18 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		bufferCfg.SetLogSamplerConfig(logReceiverType.LogSamplers(cfg))
 		operators := append([]operator.Config{inputCfg}, baseCfg.Operators...)
 
-		emitterOpts := []helper.EmitterOption{}
+		emitterOpts := []emitterOption{}
 		if baseCfg.maxBatchSize > 0 {
-			emitterOpts = append(emitterOpts, helper.WithMaxBatchSize(baseCfg.maxBatchSize))
+			emitterOpts = append(emitterOpts, withMaxBatchSize(baseCfg.maxBatchSize))
 		}
-
 		if baseCfg.flushInterval > 0 {
-			emitterOpts = append(emitterOpts, helper.WithFlushInterval(baseCfg.flushInterval))
+			emitterOpts = append(emitterOpts, withFlushInterval(baseCfg.flushInterval))
 		}
-
-		emitter := helper.NewLogEmitter(params.TelemetrySettings, emitterOpts...)
+		emitter := NewLogEmitter(params.Logger.Sugar(), emitterOpts...)
 		pipe, err := pipeline.Config{
 			Operators:     operators,
 			DefaultOutput: emitter,
-		}.Build(params.TelemetrySettings)
+		}.Build(params.Logger.Sugar())
 		if err != nil {
 			return nil, err
 		}
@@ -71,7 +70,7 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		if baseCfg.numWorkers > 0 {
 			converterOpts = append(converterOpts, withWorkerCount(baseCfg.numWorkers))
 		}
-		converter := NewConverter(params.TelemetrySettings, converterOpts...)
+		converter := NewConverter(params.Logger, converterOpts...)
 		obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 			ReceiverID:             params.ID,
 			ReceiverCreateSettings: params,
@@ -79,13 +78,12 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		if err != nil {
 			return nil, err
 		}
-
 		return &receiver{
-			set:       params.TelemetrySettings,
 			id:        params.ID,
 			pipe:      pipe,
 			emitter:   emitter,
 			consumer:  consumerretry.NewLogs(baseCfg.RetryOnFailure, params.Logger, nextConsumer),
+			logger:    params.Logger,
 			converter: converter,
 			obsrecv:   obsrecv,
 			storageID: baseCfg.StorageID,
