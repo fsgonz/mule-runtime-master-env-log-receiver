@@ -8,6 +8,7 @@ import (
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/buffer"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/consumerretry"
 	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/logsampler"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
@@ -23,7 +24,8 @@ type LogReceiverType interface {
 	Type() component.Type
 	CreateDefaultConfig() component.Config
 	BaseConfig(component.Config) BaseConfig
-	InputConfig(component.Config) operator.Config
+	OperatorConfig(component.Config) operator.Config
+	InputConfig(component.Config) helper.InputConfig
 	LogSamplers(component.Config) logsampler.Config
 	BufferConfig(config component.Config) *buffer.BufferConfig
 }
@@ -44,10 +46,11 @@ func createLogsReceiver(logReceiverType LogReceiverType) rcvr.CreateLogsFunc {
 		cfg component.Config,
 		nextConsumer consumer.Logs,
 	) (rcvr.Logs, error) {
-		inputCfg := logReceiverType.InputConfig(cfg)
+		inputCfg := logReceiverType.OperatorConfig(cfg)
 		baseCfg := logReceiverType.BaseConfig(cfg)
 		bufferCfg := logReceiverType.BufferConfig(cfg)
 		bufferCfg.SetLogSamplerConfig(logReceiverType.LogSamplers(cfg))
+		bufferCfg.SetInputConfig(logReceiverType.InputConfig(cfg))
 		operators := append([]operator.Config{inputCfg}, baseCfg.Operators...)
 
 		emitterOpts := []emitterOption{}

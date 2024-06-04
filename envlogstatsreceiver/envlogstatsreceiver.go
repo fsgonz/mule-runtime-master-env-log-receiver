@@ -32,7 +32,7 @@ func NewFactory() receiver.Factory {
 //
 // The default configuration includes:
 // - BaseConfig with empty operator configurations and a default retry-on-failure policy.
-// - InputConfig initialized with default operator types.
+// - OperatorConfig initialized with default operator types.
 // - BufferConfig with default buffer buffer settings.
 // - LogSamplerConfig with no log samplers.
 //
@@ -77,8 +77,12 @@ type ReceiverType struct{}
 //
 // Returns:
 // - An operator.Config configured with the buffer settings from the provided configuration.
-func (f ReceiverType) InputConfig(cfg component.Config) operator.Config {
+func (f ReceiverType) OperatorConfig(cfg component.Config) operator.Config {
 	return operator.NewConfig(&cfg.(*EnvLogStatsReceiverReceiverConfig).BufferConfig)
+}
+
+func (f ReceiverType) InputConfig(cfg component.Config) helper.InputConfig {
+	return cfg.(*EnvLogStatsReceiverReceiverConfig).InputConfig
 }
 
 // LogSamplers returns the log sampler configuration from the provided component configuration.

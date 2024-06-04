@@ -33,7 +33,7 @@ func NewBufferConfig() *BufferConfig {
 //   - *BufferConfig: A pointer to the newly created BufferConfig with default values.
 func NewBufferConfigWithID(operatorID string) *BufferConfig {
 	return &BufferConfig{
-		InputConfig:         helper.NewInputConfig(operatorID, operatorType),
+		inputConfig:         helper.NewInputConfig(operatorID, operatorType),
 		FileConsumerConfig:  *statsconsumer.NewConsumerConfig(),
 		StatsConsumerConfig: statsconsumer.NewDefaultStatsConsumerConfig(),
 	}
@@ -50,7 +50,7 @@ func NewBufferConfigWithID(operatorID string) *BufferConfig {
 func (c BufferConfig) Build(logger *zap.SugaredLogger) (operator.Operator, error) {
 
 	// Build the buffer statsconsumer with the specified configuration and emit function
-	inputOperator, err := c.InputConfig.Build(logger)
+	inputOperator, err := c.inputConfig.Build(logger)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +72,6 @@ func (c BufferConfig) Build(logger *zap.SugaredLogger) (operator.Operator, error
 
 // BufferConfig defines the configuration for the buffer input operator.
 type BufferConfig struct {
-	// InputConfig embeds the helper.InputConfig struct, which provides basic input operator configuration.
-	helper.InputConfig `mapstructure:",squash"`
-
 	// Config embeds the fileconsumer.Config struct, which provides configuration specific to buffer consumption.
 	statsconsumer.FileConsumerConfig `mapstructure:",squash"`
 
@@ -82,6 +79,8 @@ type BufferConfig struct {
 	statsconsumer.StatsConsumerConfig `mapstructure:",squash"`
 
 	id string
+
+	inputConfig helper.InputConfig
 
 	logSampler logsampler.LogSampler
 }
@@ -96,6 +95,10 @@ func (c *BufferConfig) Type() string {
 
 func (c *BufferConfig) SetID(ID string) {
 	c.id = ID
+}
+
+func (c *BufferConfig) SetInputConfig(inputConfig helper.InputConfig) {
+	c.inputConfig = inputConfig
 }
 
 func (c *BufferConfig) SetLogSamplerConfig(LogSamplerConfig logsampler.Config) {
