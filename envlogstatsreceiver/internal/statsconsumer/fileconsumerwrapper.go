@@ -2,7 +2,7 @@ package statsconsumer
 
 import (
 	"context"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/lumberjack"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/lumberjack"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"log"

@@ -1,11 +1,11 @@
 package envlogstatsreceiver
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/adapter"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/buffer"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/logsampler"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/metadata"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/adapter"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/buffer"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/logsampler"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/metadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"go.opentelemetry.io/collector/component"

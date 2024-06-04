@@ -3,7 +3,7 @@
 package adapter
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/consumerretry"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/consumerretry"
 	"time"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"

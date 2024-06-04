@@ -50,7 +50,7 @@ func (r *receiver) Start(ctx context.Context, host component.Host) error {
 	r.set.Logger.Info("Starting stanza receiver")
 
 	if err := r.setStorageClient(ctx, host); err != nil {
-		return fmt.Errorf("statsconsumer client: %w", err)
+		return fmt.Errorf("storage client: %w", err)
 	}
 
 	if err := r.pipe.Start(r.storageClient); err != nil {
@@ -68,7 +68,7 @@ func (r *receiver) Start(ctx context.Context, host component.Host) error {
 
 	// ...
 	// * second one which reads all the logs produced by the converter
-	//   (aggregated by Resource) and then calls statsconsumer to statsconsumer them.
+	//   (aggregated by Resource) and then calls consumer to consumer them.
 	r.wg.Add(1)
 	go r.consumerLoop(rctx)
 

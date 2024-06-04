@@ -3,7 +3,7 @@ package buffer
 import (
 	"context"
 	"fmt"
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/statsconsumer"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/statsconsumer"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/entry"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
@@ -19,7 +19,7 @@ func (i *Input) Start(persister operator.Persister) error {
 	return i.consumer.Start(persister)
 }
 
-// Stop will stop the buffer monitoring process
+// Stop will stop the file monitoring process
 func (i *Input) Stop() error {
 	return i.consumer.Stop()
 }

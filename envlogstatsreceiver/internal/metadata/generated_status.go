@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Type = component.MustNewType("envlogreceiver")
+	Type = component.MustNewType("envlogstatsreceiver")
 )
 
 const (
