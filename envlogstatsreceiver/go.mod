@@ -2,8 +2,6 @@ module github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceive
 
 go 1.21.0
 
-toolchain go1.22.2
-
 require (
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/cespare/xxhash/v2 v2.3.0
