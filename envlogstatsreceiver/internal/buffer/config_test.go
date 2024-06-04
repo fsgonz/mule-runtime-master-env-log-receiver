@@ -3,10 +3,6 @@ package buffer
 import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/stretchr/testify/assert"
-	"go.opentelemetry.io/collector/component"
-	"go.opentelemetry.io/collector/config/configtelemetry"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"testing"
 	"time"
@@ -37,7 +33,7 @@ func TestNewFileInputConfigWithID(t *testing.T) {
 // TestBuild tests the Build method of the InputConfig struct.
 func TestBuild(t *testing.T) {
 	config := NewBufferConfig()
-	set := createMockTelemetrySettings()
+	set := createMockLogger()
 
 	operator, err := config.Build(set)
 
@@ -48,19 +44,13 @@ func TestBuild(t *testing.T) {
 // TestInput tests the Input method of the InputConfig struct.
 func TestInput(t *testing.T) {
 	config := NewBufferConfig()
-	set := createMockTelemetrySettings()
+	set := createMockLogger()
 
 	_, err := config.Build(set)
 	assert.NoError(t, err, "Build should not return an error")
 }
 
-func createMockTelemetrySettings() component.TelemetrySettings {
+func createMockLogger() *zap.SugaredLogger {
 	logger, _ := zap.NewDevelopment()
-	return component.TelemetrySettings{
-		Logger:         logger,
-		TracerProvider: trace.NewNoopTracerProvider(),
-		MetricsLevel:   configtelemetry.LevelNone,
-		Resource:       pcommon.NewResource(),
-		ReportStatus:   func(*component.StatusEvent) {},
-	}
+	return logger.Sugar()
 }

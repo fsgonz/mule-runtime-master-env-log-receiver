@@ -115,7 +115,6 @@ func (m *MockOutputOperator) Process(ctx context.Context, entry *entry.Entry) er
 	return args.Error(0)
 }
 
-func (m *MockOutputOperator) Logger() *zap.Logger {
-	args := m.Called()
-	return args.Get(0).(*zap.Logger)
+func (m *MockOutputOperator) Logger() *zap.SugaredLogger {
+	return nil
 }
