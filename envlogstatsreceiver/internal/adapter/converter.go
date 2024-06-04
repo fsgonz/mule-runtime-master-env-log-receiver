@@ -1,7 +1,7 @@
-// Taken in part from "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter"
-// so that the connector offers the same functionality as filelogreceiver related to retry on failure
+// Copyright The OpenTelemetry Authors
+// SPDX-License-Identifier: Apache-2.0
 
-package adapter
+package adapter // import "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter"
 
 import (
 	"context"
@@ -15,7 +15,6 @@ import (
 	"sync"
 
 	"github.com/cespare/xxhash/v2"
-	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.uber.org/zap"
@@ -53,8 +52,6 @@ import (
 //	    │   downstream consumers via OutChannel()             │
 //	    └─────────────────────────────────────────────────────┘
 type Converter struct {
-	set component.TelemetrySettings
-
 	// pLogsChan is a channel on which aggregated logs will be sent to.
 	pLogsChan chan plog.Logs
 
@@ -73,6 +70,8 @@ type Converter struct {
 	// wg is a WaitGroup that makes sure that we wait for spun up goroutines exit
 	// when Stop() is called.
 	wg sync.WaitGroup
+
+	logger *zap.Logger
 }
 
 type converterOption interface {
@@ -91,15 +90,14 @@ func (o workerCountOption) apply(c *Converter) {
 	c.workerCount = o.workerCount
 }
 
-func NewConverter(set component.TelemetrySettings, opts ...converterOption) *Converter {
-	set.Logger = set.Logger.With(zap.String("component", "converter"))
+func NewConverter(logger *zap.Logger, opts ...converterOption) *Converter {
 	c := &Converter{
-		set:         set,
 		workerChan:  make(chan []*entry.Entry),
 		workerCount: int(math.Max(1, float64(runtime.NumCPU()/4))),
 		pLogsChan:   make(chan plog.Logs),
 		stopChan:    make(chan struct{}),
 		flushChan:   make(chan plog.Logs),
+		logger:      logger,
 	}
 	for _, opt := range opts {
 		opt.apply(c)
@@ -108,7 +106,7 @@ func NewConverter(set component.TelemetrySettings, opts ...converterOption) *Con
 }
 
 func (c *Converter) Start() {
-	c.set.Logger.Debug("Starting log converter", zap.Int("worker_count", c.workerCount))
+	c.logger.Debug("Starting log converter", zap.Int("worker_count", c.workerCount))
 
 	c.wg.Add(c.workerCount)
 	for i := 0; i < c.workerCount; i++ {
@@ -150,35 +148,19 @@ func (c *Converter) workerLoop() {
 			}
 
 			resourceHashToIdx := make(map[uint64]int)
-			scopeIdxByResource := make(map[uint64]map[string]int)
 
 			pLogs := plog.NewLogs()
 			var sl plog.ScopeLogs
-
 			for _, e := range entries {
 				resourceID := HashResource(e.Resource)
-				var rl plog.ResourceLogs
-
 				resourceIdx, ok := resourceHashToIdx[resourceID]
 				if !ok {
 					resourceHashToIdx[resourceID] = pLogs.ResourceLogs().Len()
-
-					rl = pLogs.ResourceLogs().AppendEmpty()
+					rl := pLogs.ResourceLogs().AppendEmpty()
 					upsertToMap(e.Resource, rl.Resource().Attributes())
-
-					scopeIdxByResource[resourceID] = map[string]int{e.ScopeName: 0}
 					sl = rl.ScopeLogs().AppendEmpty()
-					sl.Scope().SetName(e.ScopeName)
 				} else {
-					rl = pLogs.ResourceLogs().At(resourceIdx)
-					scopeIdxInResource, ok := scopeIdxByResource[resourceID][e.ScopeName]
-					if !ok {
-						scopeIdxByResource[resourceID][e.ScopeName] = rl.ScopeLogs().Len()
-						sl = rl.ScopeLogs().AppendEmpty()
-						sl.Scope().SetName(e.ScopeName)
-					} else {
-						sl = pLogs.ResourceLogs().At(resourceIdx).ScopeLogs().At(scopeIdxInResource)
-					}
+					sl = pLogs.ResourceLogs().At(resourceIdx).ScopeLogs().At(0)
 				}
 				convertInto(e, sl.LogRecords().AppendEmpty())
 			}
@@ -204,7 +186,7 @@ func (c *Converter) flushLoop() {
 
 		case pLogs := <-c.flushChan:
 			if err := c.flush(ctx, pLogs); err != nil {
-				c.set.Logger.Debug("Problem sending log entries",
+				c.logger.Debug("Problem sending log entries",
 					zap.Error(err),
 				)
 			}
@@ -284,7 +266,7 @@ func convertInto(ent *entry.Entry, dest plog.LogRecord) {
 	}
 }
 
-func upsertToAttributeVal(value any, dest pcommon.Value) {
+func upsertToAttributeVal(value interface{}, dest pcommon.Value) {
 	switch t := value.(type) {
 	case bool:
 		dest.SetBool(t)
@@ -318,23 +300,23 @@ func upsertToAttributeVal(value any, dest pcommon.Value) {
 		dest.SetDouble(t)
 	case float32:
 		dest.SetDouble(float64(t))
-	case map[string]any:
+	case map[string]interface{}:
 		upsertToMap(t, dest.SetEmptyMap())
-	case []any:
+	case []interface{}:
 		upsertToSlice(t, dest.SetEmptySlice())
 	default:
 		dest.SetStr(fmt.Sprintf("%v", t))
 	}
 }
 
-func upsertToMap(obsMap map[string]any, dest pcommon.Map) {
+func upsertToMap(obsMap map[string]interface{}, dest pcommon.Map) {
 	dest.EnsureCapacity(len(obsMap))
 	for k, v := range obsMap {
 		upsertToAttributeVal(v, dest.PutEmpty(k))
 	}
 }
 
-func upsertToSlice(obsArr []any, dest pcommon.Slice) {
+func upsertToSlice(obsArr []interface{}, dest pcommon.Slice) {
 	dest.EnsureCapacity(len(obsArr))
 	for _, v := range obsArr {
 		upsertToAttributeVal(v, dest.AppendEmpty())
@@ -425,11 +407,11 @@ func newHashWriter() *hashWriter {
 }
 
 var hashWriterPool = &sync.Pool{
-	New: func() any { return newHashWriter() },
+	New: func() interface{} { return newHashWriter() },
 }
 
 // HashResource will hash an entry.Entry.Resource
-func HashResource(resource map[string]any) uint64 {
+func HashResource(resource map[string]interface{}) uint64 {
 	if len(resource) == 0 {
 		return emptyResourceID
 	}
