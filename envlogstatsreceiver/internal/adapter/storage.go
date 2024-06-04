@@ -13,7 +13,7 @@ import (
 
 func GetStorageClient(ctx context.Context, host component.Host, storageID *component.ID, componentID component.ID) (storage.Client, error) {
 	if storageID == nil {
-		return storage.NewNopClient(), nil
+		return nil, fmt.Errorf("An storage is mandatory for stats for component", componentID)
 	}
 
 	extension, ok := host.GetExtensions()[*storageID]
