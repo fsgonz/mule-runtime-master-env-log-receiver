@@ -1,7 +1,7 @@
 package sampler
 
 import (
-	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogreceiver/internal/stats/scraper"
+	"github.com/fsgonz/mule-runtime-master-env-log-receiver/envlogstatsreceiver/internal/stats/scraper"
 	"log"
 	"os"
 )

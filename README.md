@@ -56,7 +56,7 @@ This will output netstats delta metrics using a file as a buffer.
 The receiver will add a record to the filebuffer.log each 60s the receiver will read that file producing the logs to the pipeline each 10s.
 
 ```yaml
-  envlogreceiver/metering:
+  envlogstatsreceiver/metering:
     log_samplers:
       - metric: netstats
         poll_interval: 60s
@@ -77,7 +77,7 @@ The receiver will add a record to the filebuffer.log each 60s the receiver will 
 This will output netstats directly to the pipeline each 60s. The buffer will be done by the pipeline.
 
 ```yaml
-  envlogreceiver/metering:
+  envlogstatsreceiver/metering:
     log_samplers:
       - metric: netstats
         poll_interval: 60s
