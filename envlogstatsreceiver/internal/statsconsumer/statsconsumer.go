@@ -49,11 +49,11 @@ func NewDefaultStatsConsumerConfig() StatsConsumerConfig {
 	return StatsConsumerConfig{defaultPollInterval}
 }
 
-func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
+func Build(logger *zap.SugaredLogger, logSampler logsampler.LogSampler, emit func(ctx context.Context, Logtoken []byte, attrs map[string]any) error, fileConsumerConfig FileConsumerConfig) (StartStoppable, error) {
 	emitter := &Emitter{
-		set:          set,
-		pollInterval: logSampler.PollInterval,
-		emit:         emit,
+		SugaredLogger: logger,
+		pollInterval:  logSampler.PollInterval,
+		emit:          emit,
 	}
 
 	if fileConsumerConfig.Path != "" {
@@ -76,7 +76,7 @@ func Build(set component.TelemetrySettings, logSampler logsampler.LogSampler, em
 			fileConsumerConfig.DeleteAfterRead,
 		}
 
-		manager, err := config.Build(set, emit)
+		manager, err := config.Build(logger, emit)
 
 		if err != nil {
 			return nil, err

@@ -8,7 +8,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/split"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/trim"
-	"go.opentelemetry.io/collector/component"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -53,7 +53,7 @@ func NewConsumerConfig() *FileConsumerConfig {
 	}
 }
 
-func (c FileConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
+func (c FileConsumerConfig) Build(logger *zap.SugaredLogger, emit func(ctx context.Context, token []byte, attrs map[string]any) error) (*fileconsumer.Manager, error) {
 	criteria := matcher.Criteria{Include: []string{c.Path}}
 
 	config := fileconsumer.Config{
@@ -73,5 +73,5 @@ func (c FileConsumerConfig) Build(set component.TelemetrySettings, emit func(ctx
 		c.DeleteAfterRead,
 	}
 
-	return config.Build(set, emit)
+	return config.Build(logger, emit)
 }
